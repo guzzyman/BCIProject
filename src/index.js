@@ -1,14 +1,47 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+import React from "react";
+import ReactDOM from "react-dom";
+import { IconButton, Icon } from "@mui/material";
+import "./index.css";
+import "common/HttpInterceptor";
+import { notistackRef } from "common/Constants";
+// import { BrowserRouter } from "react-router-dom";
+import { Provider as ReduxProvider } from "react-redux";
+import store from "common/Store";
+import { SnackbarProvider } from "notistack";
+import AppThemeProvider from "AppThemeProvider";
+import App from "./App";
+import reportWebVitals from "./reportWebVitals";
+import AdapterDateFns from "@mui/lab/AdapterDateFns";
+import LocalizationProvider from "@mui/lab/LocalizationProvider";
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <LocalizationProvider dateAdapter={AdapterDateFns}>
+      <ReduxProvider store={store}>
+        <AppThemeProvider>
+          <SnackbarProvider
+            ref={notistackRef}
+            anchorOrigin={{ horizontal: "right", vertical: "top" }}
+            preventDuplicate
+            action={(key) => (
+              <IconButton
+                onClick={() => {
+                  notistackRef.current.closeSnackbar(key);
+                }}
+                color="inherit"
+                size="small"
+              >
+                <Icon>close</Icon>
+              </IconButton>
+            )}
+          >
+            <App />
+          </SnackbarProvider>
+        </AppThemeProvider>
+      </ReduxProvider>
+    </LocalizationProvider>
   </React.StrictMode>,
-  document.getElementById('root')
+  document.getElementById("root")
 );
 
 // If you want to start measuring performance in your app, pass a function
