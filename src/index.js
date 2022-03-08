@@ -4,7 +4,7 @@ import { IconButton, Icon } from "@mui/material";
 import "./index.css";
 import "common/HttpInterceptor";
 import { notistackRef } from "common/Constants";
-// import { BrowserRouter } from "react-router-dom";
+import { BrowserRouter } from "react-router-dom";
 import { Provider as ReduxProvider } from "react-redux";
 import store from "common/Store";
 import { SnackbarProvider } from "notistack";
@@ -18,26 +18,28 @@ ReactDOM.render(
   <React.StrictMode>
     <LocalizationProvider dateAdapter={AdapterDateFns}>
       <ReduxProvider store={store}>
-        <AppThemeProvider>
-          <SnackbarProvider
-            ref={notistackRef}
-            anchorOrigin={{ horizontal: "right", vertical: "top" }}
-            preventDuplicate
-            action={(key) => (
-              <IconButton
-                onClick={() => {
-                  notistackRef.current.closeSnackbar(key);
-                }}
-                color="inherit"
-                size="small"
-              >
-                <Icon>close</Icon>
-              </IconButton>
-            )}
-          >
-            <App />
-          </SnackbarProvider>
-        </AppThemeProvider>
+        <BrowserRouter>
+          <AppThemeProvider>
+            <SnackbarProvider
+              ref={notistackRef}
+              anchorOrigin={{ horizontal: "right", vertical: "top" }}
+              preventDuplicate
+              action={(key) => (
+                <IconButton
+                  onClick={() => {
+                    notistackRef.current.closeSnackbar(key);
+                  }}
+                  color="inherit"
+                  size="small"
+                >
+                  <Icon>close</Icon>
+                </IconButton>
+              )}
+            >
+              <App />
+            </SnackbarProvider>
+          </AppThemeProvider>
+        </BrowserRouter>
       </ReduxProvider>
     </LocalizationProvider>
   </React.StrictMode>,

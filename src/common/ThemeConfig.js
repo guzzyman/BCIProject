@@ -3,10 +3,10 @@ import { createTheme } from "@mui/material/styles";
 export const theme = customizeComponents({
   palette: {
     primary: {
-      main: "#177EB9",
+      main: "#008c69",
     },
     secondary: {
-      main: "#95334B",
+      main: "#008c69",
     },
     complementary: {
       main: "#161B2E",
@@ -31,6 +31,11 @@ export const theme = customizeComponents({
     },
   },
   components: {
+    MuiContainer: {
+      defaultProps: {
+        maxWidth: "xl",
+      },
+    },
     MuiLoadingButton: {
       defaultProps: {
         variant: "contained",

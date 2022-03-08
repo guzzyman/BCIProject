@@ -14,7 +14,9 @@ export const MediaQueryBreakpointEnum = {
   "2xs": "(min-width: 425px)",
 };
 
-export const RouteEnum = {};
+export const RouteEnum = {
+  DASHBOARD: "/",
+};
 
 export const RtkqTagEnum = {};
 
