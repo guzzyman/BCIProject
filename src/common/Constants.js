@@ -16,6 +16,7 @@ export const MediaQueryBreakpointEnum = {
 
 export const RouteEnum = {
   DASHBOARD: "/",
+  INCIDENT: "/incident",
 };
 
 export const RtkqTagEnum = {};
