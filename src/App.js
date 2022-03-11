@@ -37,6 +37,10 @@ const ROUTES = [
   {
     path: RouteEnum.INCIDENT,
     element: lazy(() => import("incident/Incident")),
+  },  
+  {
+    path: RouteEnum.INCIDENT_FIVEWHYS,
+    element: lazy(() => import("fivewhys/IncidentFiveWhys")),
   },
 ].map(configureRoute);
 

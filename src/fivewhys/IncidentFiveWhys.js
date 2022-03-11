@@ -3,7 +3,7 @@ import { Button, Divider, Icon, Paper, Typography } from "@mui/material";
 import TextField from "@mui/material/TextField";
 // import useTable from "hooks/useTable";
 
-function Incident(params) {
+function IncidentFiveWhys(params) {
   // const tableInstance = useTable({
   //   columns,
   //   data: [],
@@ -12,92 +12,92 @@ function Incident(params) {
     <>
       <div className="flex mb-4">
         <Typography variant="h4" className="font-bold mt-4">
-          Incident Register
+          5 Whys Root Cause Analysis (RCA)
         </Typography>
       </div>
       <div className="grid gap-8 md:gap-6">
         <Paper className="p-4">
           <div>
             <Typography variant="h6" className="font-bold">
-              Incident Register
+              5 Whys RCA
             </Typography>
             <div className="h-10">
               Kindly provide information about the incident below
             </div>
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-4">
-              <TextField variant="outlined" label="Incident Date" />
-              <TextField variant="outlined" label="Incident Time" />
               <TextField
                 variant="outlined"
-                label="Incident Title/Problem Statement"
+                label="Problem Definition/Description of Non-Conformity"
               />
-              <TextField select variant="outlined" label="Incident Type" />
-              <TextField
-                multiline
-                variant="outlined"
-                label="Preliminary Cause of Incident"
-              />
+              <TextField variant="outlined" label="Problem Owner" />
+              <TextField select variant="outlined" label="Rating" />
+              <TextField multiline rows={4} variant="outlined" label="Why" />
               <TextField
                 multiline
+                rows={4}
                 variant="outlined"
-                label="Current State (As-Is)"
+                label="Root Cause"
               />
-              <TextField variant="outlined" label="Incident Background" />
-              <TextField select variant="outlined" label="Detected by" />
-              <TextField variant="outlined" label="Detection Description" />
-            </div>
-          </div>
-        </Paper>
-        <Paper className="p-4">
-          <div>
-            <Typography variant="h6" className="font-bold">
-              Impact on Company/Customers
-            </Typography>
-            <div className="h-10">
-              Kindly provide information on Company/Customer Impact below
-            </div>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-4">
-              <TextField select variant="outlined" label="Impact on Company" />
-              <TextField variant="outlined" label="Comment" />
               <TextField
-                select
+                multiline
+                rows={4}
                 variant="outlined"
-                label="Impact on Customer(s)"
+                label="Notes/Comments"
               />
-              <TextField variant="outlined" label="Comment" />
             </div>
           </div>
         </Paper>
         <Paper className="p-4">
           <div>
             <Typography variant="h6" className="font-bold">
-              Incident Ranking
+              Solution Objective
             </Typography>
             <div className="h-10">
-              Rank the incident below. use the <strong>Add button</strong> to
-              add more ranking
+              Kindly provide information on solution Objective below. You may
+              add more solution objectives by using the{" "}
+              <strong>Add Button</strong>
             </div>
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-4">
-              <TextField select variant="outlined" label="Category" />
-              <TextField select variant="outlined" label="Ranking" />
+              <TextField
+                className="col-span-2"
+                variant="outlined"
+                multiline
+                rows={4}
+                label="Solution Objective"
+              />
             </div>
           </div>
         </Paper>
         <Paper className="p-4">
           <div>
             <Typography variant="h6" className="font-bold">
-              Preliminary Action
+              Review Team Member
             </Typography>
             <div className="h-10">
-              Kindly add preliminary action(s) below using the above button
+              Kindly provide review team members below. You may add more review
+              team members by using the <strong>Add Button</strong>
             </div>
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-4">
-              <TextField variant="outlined" label="Preliminary Action" />
+              <TextField select variant="outlined" label="Review Team Member" />
+            </div>
+          </div>
+        </Paper>
+        <Paper className="p-4">
+          <div>
+            <Typography variant="h6" className="font-bold">
+              Action/Action Party
+            </Typography>
+            <div className="h-10">
+              Kindly provide action/action party below. You may add more action/action party by using the <strong>Add Button</strong>
+            </div>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-4">
+              <TextField variant="outlined" label="Action" />
               <TextField variant="outlined" label="Action Party" />
-              <TextField variant="outlined" label="Action Date" />
+              <TextField variant="outlined" label="Review Date" />
             </div>
           </div>
         </Paper>
+
         <div className="flex items-center justify-end gap-4">
           <Button color="error">Cancel</Button>
           <LoadingButton type="submit">Submit</LoadingButton>
@@ -107,4 +107,4 @@ function Incident(params) {
   );
 }
 
-export default Incident;
+export default IncidentFiveWhys;
