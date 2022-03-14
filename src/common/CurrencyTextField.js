@@ -1,36 +1,36 @@
-import React from "react";
+import { forwardRef } from "react";
 import { TextField, InputAdornment } from "@mui/material";
 import { CurrencyEnum } from "./Constants";
-// import { formatNumber } from "./Utils";
+import { formatNumber } from "./Utils";
 
-export const CurrencyTextField = React.forwardRef(
+export const CurrencyTextField = forwardRef(
   /**
    *
-   * @param {{currency: keyof typeof CurrencyEnum} & import("@material-ui/core").TextFieldProps} props
+   * @param {{code: keyof typeof CurrencyEnum} & import("@mui/material").TextFieldProps} props
    */
   (props, ref) => {
-    const { InputProps, currency, value, onChange, onBlur, ...rest } = props;
-    const _currency = CurrencyEnum[currency || "NG"];
+    const { InputProps, code, value, onChange, onBlur, ...rest } = props;
+    const currency = CurrencyEnum[code || "NG"];
 
     return (
       <TextField
         ref={ref}
         value={value}
         onChange={(e) => {
-          // formatNumber(e.target);
+          format(e.target);
           if (onChange) {
             onChange(e);
           }
         }}
         onBlur={(e) => {
-          // formatNumber(e.target, true);
+          format(e.target, true);
           if (onBlur) {
             onBlur(e);
           }
         }}
         InputProps={{
           startAdornment: (
-            <InputAdornment position="start">{_currency.symbol}</InputAdornment>
+            <InputAdornment position="start">{currency.symbol}</InputAdornment>
           ),
           ...InputProps,
         }}
@@ -41,7 +41,46 @@ export const CurrencyTextField = React.forwardRef(
 );
 
 CurrencyTextField.defaultProps = {
-  currency: "NGN",
+  code: "NGN",
 };
 
 export default CurrencyTextField;
+
+/**
+ *
+ * @param {HTMLInputElement} input
+ * @param {boolean} blur
+ */
+function format(input, blur) {
+  let value = input.value;
+  // console.log(value);
+  if (value === "") {
+    return "";
+  }
+  const previousLength = value.length;
+  let caretPosition = input.selectionStart;
+
+  const decimalPosition = value.indexOf(".");
+  if (decimalPosition >= 0) {
+    let leftSide = formatNumber(value.substring(0, decimalPosition));
+    let rightSide = formatNumber(value.substring(decimalPosition));
+
+    if (blur) {
+      rightSide += "00";
+    }
+
+    rightSide = rightSide.substring(0, 2);
+    value = leftSide + "." + rightSide;
+  } else {
+    value = formatNumber(value);
+    if (blur) {
+      value += "00";
+    }
+  }
+  input.value = value;
+  const currentLength = value.length;
+  caretPosition = currentLength - previousLength + caretPosition;
+  input.setSelectionRange(caretPosition, caretPosition);
+
+  return value;
+}

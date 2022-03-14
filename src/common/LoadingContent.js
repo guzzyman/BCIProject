@@ -33,31 +33,18 @@ function LoadingContent(props) {
     return typeof children === "function" ? children() : children;
   }
 
-  const defaultLoadingContent = <LoadingIndicator size={size} />;
-  const defaultErrorContent = (
-    <IconButton onClick={() => onReload?.()} variant="secondary">
-      <Icon classes={{ root: "LoadingContent__reloadIcon" }}>restart_alt</Icon>
-    </IconButton>
-  );
-
   return (
     <div className={clsx("LoadingContent", className)} {...rest}>
       {error ? (
         <>
-          {errorContent
-            ? typeof errorContent === "function"
-              ? errorContent(defaultErrorContent)
-              : errorContent
-            : defaultErrorContent}
+          {errorContent || (
+            <IconButton onClick={() => onReload?.()} variant="secondary">
+              <Icon className="LoadingContent__reloadIcon">restart_alt</Icon>
+            </IconButton>
+          )}
         </>
-      ) : loadingContent ? (
-        typeof loadingContent === "function" ? (
-          loadingContent(defaultLoadingContent)
-        ) : (
-          loadingContent
-        )
       ) : (
-        defaultLoadingContent
+        loadingContent || <LoadingIndicator size={size} />
       )}
     </div>
   );

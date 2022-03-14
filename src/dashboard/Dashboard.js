@@ -1,6 +1,10 @@
 import { Icon, Paper, Typography } from "@mui/material";
+import { bciApi } from "./DashboardStoreQuerySlice";
 
 function Dashboard(params) {
+  const getBCICategory = bciApi.useGetIncidentCategoryQuery();
+  const getCategoryRanking = bciApi.useGetCategoryRankingQuery();
+  console.log(getBCICategory, getCategoryRanking);
   return (
     <>
       <div className="flex mb-4">
@@ -10,7 +14,7 @@ function Dashboard(params) {
         <Paper className="p-4">
           <div className="flex items-center justify-between">
             <Typography variant="h6" className="font-bold">
-              Dialy Sales
+              Daily Sales
             </Typography>
             <Icon>more_vert</Icon>
           </div>
@@ -51,7 +55,7 @@ function Dashboard(params) {
             <Icon>more_vert</Icon>
           </div>
           <div className="h-48">Childre</div>
-        </Paper>        
+        </Paper>
         <Paper className="p-4 sm:col-span-2">
           <div className="flex items-center justify-between">
             <Typography variant="h6" className="font-bold">

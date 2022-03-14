@@ -6,7 +6,7 @@ function AppFooter(props) {
       <Toolbar>
         <Container className="mt-10 mb-10">
           <Typography variant="h6">
-            2020 © NLNG. Estate Management Service Application
+            2021 © NLNG. BCI
           </Typography>
         </Container>
       </Toolbar>

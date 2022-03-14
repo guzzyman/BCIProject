@@ -1,21 +1,19 @@
-import CDLBlueImg from "assets/images/cdl-logo-blue.png";
-import CDLWhiteImg from "assets/images/cdl-logo-white.png";
+import { ReactComponent as NimbleX360Svg } from "assets/svgs/nimble-x-360.svg";
+import NimbleX360Png from "assets/images/nimble-x-360.png";
+import "./Logo.css";
 import clsx from "clsx";
 
 /**
  *
- * @param {{color: 'blue' | 'white'} & import("react").ComponentPropsWithoutRef<'img'>} props
+ * @param {import("react").ComponentPropsWithoutRef<typeof NimbleX360Svg>} props
  */
 function Logo(props) {
-  const { color, className, ...rest } = props;
-  const Img = color === "white" ? CDLWhiteImg : CDLBlueImg;
+  const { className, ...rest } = props;
+  // return <NimbleX360Svg {...props } />;
   return (
-    <img
-      src={Img}
-      alt="logo"
-      className={clsx("max-w-[200px]", className)}
-      {...rest}
-    />
+    <div className={clsx("Logo", className)} {...rest}>
+      <img src={NimbleX360Png} alt="NimbleX360" className="w-full h-full" />
+    </div>
   );
 }
 

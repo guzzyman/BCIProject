@@ -8,7 +8,7 @@ import LoadingIndicator from "./LoadingIndicator";
 export function LoadingModal(props) {
   return (
     <Modal className="flex items-center justify-center" {...props}>
-      <LoadingIndicator className="absolute top-1/2 left-1/2" />
+      <LoadingIndicator />
     </Modal>
   );
 }

@@ -1,4 +1,5 @@
 import { createRef } from "react";
+// import resolveConfig from "tailwindcss/resolveConfig";
 const tailwindDefaultTheme = require("tailwindcss/defaultTheme");
 
 export const notistackRef = createRef();
@@ -20,7 +21,9 @@ export const RouteEnum = {
   INCIDENT_FIVEWHYS: "/fivewhys"
 };
 
-export const RtkqTagEnum = {};
+export const RtkqTagEnum = {
+  DASHBOARD: 'DASHBOARD',
+};
 
 export const CurrencyEnum = {
   USD: {
