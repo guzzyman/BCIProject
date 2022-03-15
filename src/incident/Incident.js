@@ -4,6 +4,7 @@ import { DateTimePicker, LoadingButton } from "@mui/lab";
 import {
   Button,
   Divider,
+  MenuItem,
   Icon,
   IconButton,
   Paper,
@@ -16,7 +17,7 @@ import * as yup from "yup";
 import useDataRef from "hooks/useDataRef";
 import { getTextFieldFormikProps } from "common/Utils";
 import DynamicTable from "common/DynamicTable";
-import { bciApi } from "../dashboard/DashboardStoreQuerySlice";
+import { bciApi } from "./IncidentStoreQuerySlice";
 import useTable from "hooks/useTable";
 
 function Incident(params) {
@@ -29,20 +30,24 @@ function Incident(params) {
     setValue(newValue);
   };
   const getBCICategory = bciApi.useGetIncidentCategoryQuery();
+  const bciCategoryOptions = getBCICategory?.data;
   const getCategoryRanking = bciApi.useGetCategoryRankingQuery();
-  console.log(getBCICategory, getCategoryRanking);
+  const categoryRankingOptions = getCategoryRanking?.data;
+  const breachType = bciApi.useGetIncidentTypeQuery();
+  const breachTypeOptions = breachType?.data;
 
   const formik = useFormik({
     initialValues: {
-      // id: 0,
-      // dateCreated: "",
-      // lastModified: "",
-      // createdBy: "",
-      // modifiedBy: "",
-      // isDeleted: false,
-      // bciID: "",
+      id: 0,
+      dateCreated: "2022-03-14T22:10:03.474Z",
+      lastModified: "2022-03-14T22:10:03.474Z",
+      createdBy: "string",
+      modifiedBy: "string",
+      isDeleted: true,
+      breachTime: "2022-03-14T22:10:03.474Z",
+
+      bciID: "",
       breachDate: "",
-      breachTime: "",
       breachTitle: "",
       breachDetail: "",
       breachType: "",
@@ -52,36 +57,28 @@ function Incident(params) {
       companyImpact: "",
       customerImpact: "",
       comment: "",
-      companyImpactComment: "",
       incidentCause: "",
-      controlWeakness: "",
-      supervisoryWeakness: "",
-      resolution: "",
-      resolutionDate: "",
-      keyLearningPoint: "",
-      proposedChange: "",
-      doc: "",
-      status: "",
-      reportBy: "",
-      reportDate: "",
+      reportBy: "Ibukun.Onasanya",
+      companyImpactComment: "",
       currentState: "",
-      remark: "",
-      bciActions: [
-        {
-          id: 0,
-          bciRegisterID: 0,
-          preliminaryAction: "",
-          actionDate: "",
-          actionParty: "",
-        },
-      ],
+      bciActions: [],
       incidentRanking: [],
+
+      controlWeakness: "string",
+      supervisoryWeakness: "string",
+      resolution: "string",
+      resolutionDate: "2022-03-14T22:10:03.474Z",
+      keyLearningPoint: "string",
+      proposedChange: "string",
+      doc: "string",
+      status: "string",
+      reportDate: "2022-03-14T22:10:03.474Z",
+      remark: "string",
     },
     validateOnChange: false,
     validateBlur: false,
     validationSchema: yup.object({
       breachDate: yup.string().trim().required(),
-      breachTime: yup.string().trim().required(),
       breachTitle: yup.string().trim().required(),
       breachDetail: yup.string().trim().required(),
       breachType: yup.string().trim().required(),
@@ -93,13 +90,6 @@ function Incident(params) {
       comment: yup.string().trim().required(),
       companyImpactComment: yup.string().trim().required(),
       incidentCause: yup.string().trim().required(),
-      controlWeakness: yup.string().trim().required(),
-      supervisoryWeakness: yup.string().trim().required(),
-      resolution: yup.string().trim().required(),
-      resolutionDate: yup.string().trim().required(),
-      keyLearningPoint: yup.string().trim().required(),
-      proposedChange: yup.string().trim().required(),
-      // isDeleted: yup.boolean().trim().required(),
     }),
     onSubmit: async (values) => {
       try {
@@ -133,7 +123,13 @@ function Incident(params) {
               dataRef.current.formik,
               `incidentRanking[${row.index}].category`
             )}
-          />
+          >
+            {/* {bciCategoryOptions.map((option) => {
+              <MenuItem key={option.id} vqlue={option.id}>
+                {option.incidentCategoryName}
+              </MenuItem>;
+            })} */}
+          </TextField>
         ),
       },
       {
@@ -178,9 +174,86 @@ function Incident(params) {
     [dataRef]
   );
 
+  const bciActionsColumns = useMemo(
+    () => [
+      {
+        Header: "Preliminary Action",
+        accessor: "preliminaryAction",
+        Cell: ({ row }) => (
+          <TextField
+            fullWidth
+            variant="outlined"
+            label="Preliminary Action"
+            className="mt-2"
+            {...getTextFieldFormikProps(
+              dataRef.current.formik,
+              `bciActions[${row.index}].preliminaryAction`
+            )}
+          />
+        ),
+      },
+      {
+        Header: "Action Party",
+        accessor: "actionParty",
+        Cell: ({ row }) => (
+          <TextField
+            fullWidth
+            variant="outlined"
+            label="Action Party"
+            className="mt-2"
+            {...getTextFieldFormikProps(
+              dataRef.current.formik,
+              `bciActions[${row.index}].actionParty`
+            )}
+          />
+        ),
+      },
+      {
+        Header: "Action Date",
+        accessor: "actionDate",
+        Cell: ({ row }) => (
+          <TextField
+            fullWidth
+            variant="outlined"
+            label="Action Date"
+            className="mt-2"
+            {...getTextFieldFormikProps(
+              dataRef.current.formik,
+              `bciActions[${row.index}].actionDate`
+            )}
+          />
+        ),
+      },
+      {
+        Header: "Action",
+        accessor: "action",
+        width: 20,
+        Cell: ({ row }) => (
+          <IconButton
+            onClick={() => {
+              const newBciActions = [
+                ...dataRef.current.formik.values["bciActions"],
+              ];
+              newBciActions.splice(row.index, 1);
+              dataRef.current.formik.setFieldValue("bciActions", newBciActions);
+            }}
+          >
+            <Icon>delete</Icon>
+          </IconButton>
+        ),
+      },
+    ],
+    [dataRef]
+  );
+
   const tableInstance = useTable({
     columns,
     data: formik.values.incidentRanking,
+  });
+
+  const bciActionsTableInstance = useTable({
+    columns: bciActionsColumns,
+    data: formik.values.bciActions,
   });
   return (
     <>
@@ -220,7 +293,6 @@ function Incident(params) {
               />
               <TextField
                 select
-               
                 label="Incident Type"
                 fullWidth
                 {...formik.getFieldProps("breachType")}
@@ -228,7 +300,13 @@ function Incident(params) {
                 helperText={
                   !!formik.touched.breachType && formik.touched.breachType
                 }
-              />
+              >
+                {/* {breachTypeOptions.map((options) => (
+                  <MenuItem key={options.id} value={options.id}>
+                    {options.type}
+                  </MenuItem>
+                ))} */}
+              </TextField>
               <TextField
                 variant="outlined"
                 label="Preliminary Cause of Incident"
@@ -283,10 +361,12 @@ function Incident(params) {
                 rows={6}
                 className="col-span-3"
                 fullWidth
-                {...formik.getFieldProps("detector")}
-                error={!!formik.touched.detector && formik.touched.detector}
+                {...formik.getFieldProps("description")}
+                error={
+                  !!formik.touched.description && formik.touched.description
+                }
                 helperText={
-                  !!formik.touched.detector && formik.touched.detector
+                  !!formik.touched.description && formik.touched.description
                 }
               />
             </div>
@@ -378,9 +458,6 @@ function Incident(params) {
               </Button>
               <DynamicTable instance={tableInstance} />
             </div>
-            {/* <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-4">
-              
-            </div> */}
           </div>
         </Paper>
         <Paper className="p-4">
@@ -388,14 +465,22 @@ function Incident(params) {
             <Typography variant="h6" className="font-bold">
               Preliminary Action
             </Typography>
-            <div className="h-10">
+            <Typography className="h-10">
               Kindly add preliminary action(s) below using the above button
-            </div>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-4">
-              <TextField variant="outlined" label="Preliminary Action" />
-              <TextField variant="outlined" label="Action Party" />
-              <TextField variant="outlined" label="Action Date" />
-            </div>
+            </Typography>
+            <Button
+              className="mb-4"
+              startIcon={<Icon>add</Icon>}
+              onClick={() =>
+                formik.setFieldValue("bciActions", [
+                  ...dataRef.current.formik.values.bciActions,
+                  { ...defaultBciAction },
+                ])
+              }
+            >
+              Add
+            </Button>
+            <DynamicTable instance={bciActionsTableInstance} />
           </div>
         </Paper>
         <div className="flex items-center justify-end gap-4">
@@ -410,12 +495,14 @@ function Incident(params) {
 export default Incident;
 
 const defaultIncidentRanking = {
+  // bciRegisterId: 0,
   category: "",
   categoryRanking: "",
 };
-
-// const _detectedBy = [
-//   detectedBy:["self", "3rd Party"]//If self=> use logged on username, if 3rd party, show additional field to select 3rd party
-// ]
-// Same list feeds impact on company and customer
-// Incident date/time is one field for both
+const defaultBciAction = {
+  // id: 0,
+  // bciRegisterID: 0,
+  preliminaryAction: "",
+  actionDate: "2022-03-14T22:10:03.474Z",
+  actionParty: "",
+};

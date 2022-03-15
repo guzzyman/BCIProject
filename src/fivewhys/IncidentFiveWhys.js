@@ -108,3 +108,40 @@ function IncidentFiveWhys(params) {
 }
 
 export default IncidentFiveWhys;
+// const _detectedBy = [
+//   detectedBy:["self", "3rd Party"]//If self=> use logged on username, if 3rd party, show additional field to select 3rd party
+// ]
+// Same list feeds impact on company and customer
+// Incident date/time is one field for both
+
+/***
+ * 
+ * {
+  "bciRegisterId": 0,
+  "problemDefinition": "string",
+  "problemOwner": "string",
+  "rating": "string",
+  "rcaDate": "2022-03-14T21:59:10.386Z",
+  "status": "string",
+  "rcaSolutionObjectives": [
+    {
+      "solutionObjective": "string"
+    }
+  ],
+  "rcaWhys": [
+    {
+      "why": "string",
+      "comment": "string",
+      "rootCause": "string"
+    }
+  ],
+  "rcaReviewTeamMembers": [
+    {
+      "member": "string",
+      "status": "string",
+      "statusDate": "2022-03-14T21:59:10.386Z"
+    }
+  ]
+}
+ * 
+ */
