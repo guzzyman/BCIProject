@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { DateTimePicker, LoadingButton } from "@mui/lab";
+import { DateTimePicker, DatePicker, LoadingButton } from "@mui/lab";
 import {
   Button,
   Divider,
@@ -29,12 +29,15 @@ function Incident(params) {
   const handleChange = (newValue) => {
     setValue(newValue);
   };
+
+  const [addBCIMutation, { isLoading }] = bciApi.useAddBCIMutation();
+  const breachType = bciApi.useGetIncidentTypeQuery();
   const getBCICategory = bciApi.useGetIncidentCategoryQuery();
   const bciCategoryOptions = getBCICategory?.data;
   const getCategoryRanking = bciApi.useGetCategoryRankingQuery();
   const categoryRankingOptions = getCategoryRanking?.data;
-  const breachType = bciApi.useGetIncidentTypeQuery();
-  const breachTypeOptions = breachType?.data;
+  const getImpact = bciApi.useGetImpactQuery();
+  const impactOptions = getImpact?.data;
 
   const formik = useFormik({
     initialValues: {
@@ -51,8 +54,8 @@ function Incident(params) {
       breachTitle: "",
       breachDetail: "",
       breachType: "",
-      detector: "",
-      dateDetected: "",
+      detector: "G.O",
+      dateDetected: "XYZ",
       description: "",
       companyImpact: "",
       customerImpact: "",
@@ -82,8 +85,8 @@ function Incident(params) {
       breachTitle: yup.string().trim().required(),
       breachDetail: yup.string().trim().required(),
       breachType: yup.string().trim().required(),
-      detector: yup.string().trim().required(),
-      dateDetected: yup.string().trim().required(),
+      // detector: yup.string().trim().required(),
+      // dateDetected: yup.string().trim().required(),
       description: yup.string().trim().required(),
       companyImpact: yup.string().trim().required(),
       customerImpact: yup.string().trim().required(),
@@ -92,16 +95,20 @@ function Incident(params) {
       incidentCause: yup.string().trim().required(),
     }),
     onSubmit: async (values) => {
+      const _value = values;
+      if(!!formik.values.breachDate){
+        breachDate:new Date(_value.breachDate);
+      }
       try {
-        const func = isEdit ? "" : "";
-        await func({
-          id,
-          ...values,
-        }).unwrap();
-        enqueueSnackbar(isEdit ? `` : ``, { variant: "success" });
+        // const func = isEdit ? "" : "";
+        await addBCIMutation({ ..._value }).unwrap();
+        enqueueSnackbar(
+          isEdit ? `BCI Added Successfully` : `BCI Updated Successfully`,
+          { variant: "success" }
+        );
         navigate(-1);
       } catch (error) {
-        enqueueSnackbar(isEdit ? `` : ``, { variant: "error" });
+        enqueueSnackbar(`Failed to create BCI`, { variant: "error" });
       }
     },
   });
@@ -121,14 +128,15 @@ function Incident(params) {
             className="mt-2"
             {...getTextFieldFormikProps(
               dataRef.current.formik,
-              `incidentRanking[${row.index}].category`
+              `incidentRanking[${row?.index}].category`
             )}
           >
-            {/* {bciCategoryOptions.map((option) => {
-              <MenuItem key={option.id} vqlue={option.id}>
-                {option.incidentCategoryName}
-              </MenuItem>;
-            })} */}
+            {categoryRankingOptions &&
+              categoryRankingOptions?.map((options) => (
+                <MenuItem key={options?.id} value={options?.id}>
+                  {options?.category}
+                </MenuItem>
+              ))}
           </TextField>
         ),
       },
@@ -144,9 +152,21 @@ function Incident(params) {
             className="mt-2"
             {...getTextFieldFormikProps(
               dataRef.current.formik,
-              `categoryRanking[${row.index}].categoryRanking`
+              `incidentRanking[${row?.index}].categoryRanking`
             )}
-          />
+          >
+            {/* {categoryRankingOptions?.map((option) => {
+              <MenuItem key={option?.id} value={option?.id}>
+                {option?.ranking}
+              </MenuItem>;
+            })} */}
+            {categoryRankingOptions &&
+              categoryRankingOptions?.map((options) => (
+                <MenuItem key={options?.id} value={options?.id}>
+                  {options?.ranking}
+                </MenuItem>
+              ))}
+          </TextField>
         ),
       },
       {
@@ -171,7 +191,7 @@ function Incident(params) {
         ),
       },
     ],
-    [dataRef]
+    [dataRef, bciCategoryOptions, categoryRankingOptions]
   );
 
   const bciActionsColumns = useMemo(
@@ -212,14 +232,39 @@ function Incident(params) {
         Header: "Action Date",
         accessor: "actionDate",
         Cell: ({ row }) => (
-          <TextField
-            fullWidth
-            variant="outlined"
-            label="Action Date"
-            className="mt-2"
-            {...getTextFieldFormikProps(
-              dataRef.current.formik,
-              `bciActions[${row.index}].actionDate`
+          // <TextField
+          //   fullWidth
+          //   variant="outlined"
+          //   label="Action Date"
+          //   className="mt-2"
+          //   {...getTextFieldFormikProps(
+          //     dataRef.current.formik,
+          //     `bciActions[${row.index}].actionDate`
+          //   )}
+          // />
+          <DatePicker
+            label="Incident Date/Time"
+            value={
+              dataRef.current.formik.values?.bciActions[`${row.index}`]
+                .actionDate
+            }
+            onChange={(newValue) => {
+              dataRef.current.formik.setFieldValue(
+                `bciActions[${row.index}].actionDate`,
+                newValue
+              );
+            }}
+            renderInput={(params) => (
+              <TextField
+                className="mt-2"
+                fullWidth
+                required
+                {...getTextFieldFormikProps(
+                  dataRef.current.formik,
+                  `bciActions[${row.index}].actionDate`
+                )}
+                {...params}
+              />
             )}
           />
         ),
@@ -255,6 +300,22 @@ function Incident(params) {
     columns: bciActionsColumns,
     data: formik.values.bciActions,
   });
+
+  const defaultDetectedBy = [
+    {
+      id: 1,
+      name: "Ayodeji Olotu",
+    },
+    {
+      id: 2,
+      name: "Agugua Chika",
+    },
+    {
+      id: 3,
+      name: "Ibukun Onasanya",
+    },
+  ];
+
   return (
     <>
       <div className="flex mb-4">
@@ -274,10 +335,21 @@ function Incident(params) {
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-4">
               <DateTimePicker
                 label="Incident Date/Time"
-                value={value}
-                onChange={handleChange}
-                renderInput={(params) => <TextField {...params} />}
-                // breachDate
+                value={dataRef.current.formik.values?.breachDate}
+                onChange={(newValue) => {
+                  dataRef.current.formik.setFieldValue(`breachDate`, newValue);
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    fullWidth
+                    required
+                    {...getTextFieldFormikProps(
+                      dataRef.current.formik,
+                      `breachDate`
+                    )}
+                    {...params}
+                  />
+                )}
               />
               <TextField
                 variant="outlined"
@@ -301,11 +373,12 @@ function Incident(params) {
                   !!formik.touched.breachType && formik.touched.breachType
                 }
               >
-                {/* {breachTypeOptions.map((options) => (
-                  <MenuItem key={options.id} value={options.id}>
-                    {options.type}
-                  </MenuItem>
-                ))} */}
+                {breachType?.data &&
+                  breachType.data.map((options) => (
+                    <MenuItem key={options?.id} value={options?.id}>
+                      {options?.type}
+                    </MenuItem>
+                  ))}
               </TextField>
               <TextField
                 variant="outlined"
@@ -353,7 +426,9 @@ function Incident(params) {
                 helperText={
                   !!formik.touched.detector && formik.touched.detector
                 }
-              />
+              >
+
+              </TextField>
               <TextField
                 variant="outlined"
                 label="Detection Description"
@@ -393,7 +468,14 @@ function Incident(params) {
                 helperText={
                   !!formik.touched.companyImpact && formik.touched.companyImpact
                 }
-              ></TextField>
+              >
+                {impactOptions &&
+                  impactOptions?.map((options) => (
+                    <MenuItem key={options?.id} value={options?.id}>
+                      {options?.impactName}
+                    </MenuItem>
+                  ))}
+              </TextField>
               <TextField
                 variant="outlined"
                 label="Company Impact Comment"
@@ -416,7 +498,14 @@ function Incident(params) {
                   !!formik.touched.customerImpact &&
                   formik.touched.customerImpact
                 }
-              />
+              >
+                {impactOptions &&
+                  impactOptions?.map((options) => (
+                    <MenuItem key={options?.id} value={options?.id}>
+                      {options?.impactName}
+                    </MenuItem>
+                  ))}
+              </TextField>
               <TextField
                 variant="outlined"
                 label="Customer Impact Comment"
@@ -485,7 +574,9 @@ function Incident(params) {
         </Paper>
         <div className="flex items-center justify-end gap-4">
           <Button color="error">Cancel</Button>
-          <LoadingButton type="submit">Submit</LoadingButton>
+          <LoadingButton loading={isLoading} onClick={formik.handleSubmit}>
+            Submit
+          </LoadingButton>
         </div>
       </div>
     </>
@@ -495,14 +586,14 @@ function Incident(params) {
 export default Incident;
 
 const defaultIncidentRanking = {
-  // bciRegisterId: 0,
+  bciRegisterId: 0,
   category: "",
   categoryRanking: "",
 };
 const defaultBciAction = {
-  // id: 0,
-  // bciRegisterID: 0,
+  id: 0,
+  bciRegisterID: 0,
   preliminaryAction: "",
-  actionDate: "2022-03-14T22:10:03.474Z",
+  actionDate: "",
   actionParty: "",
 };

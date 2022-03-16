@@ -18,5 +18,17 @@ export const bciApi = baseApi.injectEndpoints({
         url: "/CategoryRanking",
       }),
     }),   
+    getImpact: builder.query({
+      query: () => ({
+        url: "/Impact",
+      }),
+    }),  
+    addBCI: builder.mutation({
+      query:(data)=>({
+        url:"/BciRegister/",
+        data,
+        method: "post",
+      })
+    }),    
   }),
 });
