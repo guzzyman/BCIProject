@@ -1,9 +1,8 @@
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { DateTimePicker, DatePicker, LoadingButton } from "@mui/lab";
 import {
   Button,
-  Divider,
   MenuItem,
   Icon,
   IconButton,
@@ -20,15 +19,11 @@ import DynamicTable from "common/DynamicTable";
 import { bciApi } from "./IncidentStoreQuerySlice";
 import useTable from "hooks/useTable";
 
-function Incident(params) {
-  const [value, setValue] = useState(new Date());
+function Incident(props) {
   const { enqueueSnackbar } = useSnackbar();
   const navigate = useNavigate();
   const { id } = useParams();
   const isEdit = !!id;
-  const handleChange = (newValue) => {
-    setValue(newValue);
-  };
 
   const [addBCIMutation, { isLoading }] = bciApi.useAddBCIMutation();
   const breachType = bciApi.useGetIncidentTypeQuery();
@@ -55,7 +50,7 @@ function Incident(params) {
       breachDetail: "",
       breachType: "",
       detector: "G.O",
-      dateDetected: "XYZ",
+      dateDetected: "2022-03-14T22:10:03.474Z",
       description: "",
       companyImpact: "",
       customerImpact: "",
@@ -98,6 +93,7 @@ function Incident(params) {
       const _value = values;
       if(!!formik.values.breachDate){
         breachDate:new Date(_value.breachDate);
+        console.log(_value.breachDate);
       }
       try {
         // const func = isEdit ? "" : "";
@@ -133,7 +129,7 @@ function Incident(params) {
           >
             {categoryRankingOptions &&
               categoryRankingOptions?.map((options) => (
-                <MenuItem key={options?.id} value={options?.id}>
+                <MenuItem key={options?.id} value={options?.category}>
                   {options?.category}
                 </MenuItem>
               ))}
@@ -162,7 +158,7 @@ function Incident(params) {
             })} */}
             {categoryRankingOptions &&
               categoryRankingOptions?.map((options) => (
-                <MenuItem key={options?.id} value={options?.id}>
+                <MenuItem key={options?.id} value={options?.ranking}>
                   {options?.ranking}
                 </MenuItem>
               ))}
@@ -375,7 +371,7 @@ function Incident(params) {
               >
                 {breachType?.data &&
                   breachType.data.map((options) => (
-                    <MenuItem key={options?.id} value={options?.id}>
+                    <MenuItem key={options?.id} value={options?.type}>
                       {options?.type}
                     </MenuItem>
                   ))}
@@ -471,7 +467,7 @@ function Incident(params) {
               >
                 {impactOptions &&
                   impactOptions?.map((options) => (
-                    <MenuItem key={options?.id} value={options?.id}>
+                    <MenuItem key={options?.id} value={options?.impactName}>
                       {options?.impactName}
                     </MenuItem>
                   ))}
@@ -501,7 +497,7 @@ function Incident(params) {
               >
                 {impactOptions &&
                   impactOptions?.map((options) => (
-                    <MenuItem key={options?.id} value={options?.id}>
+                    <MenuItem key={options?.id} value={options?.impactName}>
                       {options?.impactName}
                     </MenuItem>
                   ))}
