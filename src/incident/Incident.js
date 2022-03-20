@@ -91,8 +91,8 @@ function Incident(props) {
     }),
     onSubmit: async (values) => {
       const _value = values;
-      if(!!formik.values.breachDate){
-        breachDate:new Date(_value.breachDate);
+      if (!!formik.values.breachDate) {
+        breachDate: new Date(_value.breachDate);
         console.log(_value.breachDate);
       }
       try {
@@ -418,12 +418,13 @@ function Incident(props) {
                 label="Detected by"
                 fullWidth
                 {...formik.getFieldProps("detector")}
-                error={!!formik.touched.detector && formik.touched.detector}
-                helperText={
-                  !!formik.touched.detector && formik.touched.detector
-                }
               >
-
+                {defaultDetectedBy &&
+                  defaultDetectedBy?.map((options) => (
+                    <MenuItem key={options?.id} value={options?.name}>
+                      {options?.name}
+                    </MenuItem>
+                  ))}
               </TextField>
               <TextField
                 variant="outlined"

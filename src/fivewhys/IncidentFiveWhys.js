@@ -25,14 +25,10 @@ function IncidentFiveWhys(props) {
   const { id } = useParams();
   const isEdit = !!id;
 
+  const ratingQueryOptions = bciApi.useGetRatingQuery();
+
   // const [addBCIMutation, { isLoading }] = bciApi.useAddBCIMutation();
-  // const breachType = bciApi.useGetIncidentTypeQuery();
-  // const getBCICategory = bciApi.useGetIncidentCategoryQuery();
-  // const bciCategoryOptions = getBCICategory?.data;
-  // const getCategoryRanking = bciApi.useGetCategoryRankingQuery();
-  // const categoryRankingOptions = getCategoryRanking?.data;
-  // const getImpact = bciApi.useGetImpactQuery();
-  // const impactOptions = getImpact?.data;
+
 
   const formik = useFormik({
     initialValues: {
@@ -84,6 +80,7 @@ function IncidentFiveWhys(props) {
         Cell: ({ row }) => (
           <TextField
             multiline
+            className="mt-4 mb-4"
             rows={4}
             variant="outlined"
             label="Why"
@@ -156,7 +153,7 @@ function IncidentFiveWhys(props) {
         accessor: "solutionbjective",
         Cell: ({ row }) => (
           <TextField
-            className="col-span-2"
+          className="mt-4 mb-4"
             variant="outlined"
             multiline
             rows={4}
@@ -204,7 +201,7 @@ function IncidentFiveWhys(props) {
             fullWidth
             variant="outlined"
             label="Action"
-            className="mt-2"
+            className="mt-4 mb-4"
             {...getTextFieldFormikProps(
               dataRef.current.formik,
               `rcaActions[${row.index}].action`
@@ -289,6 +286,7 @@ function IncidentFiveWhys(props) {
         Cell: ({ row }) => (
           <TextField
             select
+            className="mt-4 mb-4"
             variant="outlined"
             label="Review Team Member"
             fullWidth
@@ -296,7 +294,14 @@ function IncidentFiveWhys(props) {
               dataRef.current.formik,
               `rcaReviewTeamMembers[${row.index}].member`
             )}
-          ></TextField>
+          >
+            {reviewTeamMembers &&
+              reviewTeamMembers?.map((options) => (
+                <MenuItem key={options?.id} value={options?.name}>
+                  {options?.name}
+                </MenuItem>
+              ))}
+          </TextField>
         ),
       },
       {
@@ -327,21 +332,25 @@ function IncidentFiveWhys(props) {
   const tableInstance = useTable({
     columns,
     data: formik.values.rcaWhys,
+    hideRowCounter:true,
   });
 
   const rcaSolutionObjectivesTableInstance = useTable({
     columns: rcaSolutionObjectivesColumns,
     data: formik.values.rcaSolutionObjectives,
+    hideRowCounter:true,
   });
 
   const rcaActionsTableInstance = useTable({
     columns: rcaActionsColumns,
     data: formik.values.rcaActions,
+    hideRowCounter:true,
   });
 
   const reviewTeamMembersTableInstance = useTable({
     columns: reviewTeamMembersColumns,
     data: formik.values.rcaReviewTeamMembers,
+    hideRowCounter:true,
   });
 
   return (
@@ -393,9 +402,14 @@ function IncidentFiveWhys(props) {
                 label="Rating"
                 fullWidth
                 {...formik.getFieldProps("rating")}
-                error={!!formik.touched.rating && formik.touched.rating}
-                helperText={!!formik.touched.rating && formik.touched.rating}
-              />
+              >
+                {ratingQueryOptions?.data &&
+                  ratingQueryOptions.data.map((options) => (
+                    <MenuItem key={options?.id} value={options?.name}>
+                      {options?.name}
+                    </MenuItem>
+                  ))}
+              </TextField>
               <div className="col-span-3">
                 <Button
                   className="mb-4"
@@ -539,3 +553,18 @@ const defaultRCAAction = {
   actionDate: "",
   actionParty: "",
 };
+
+const reviewTeamMembers = [
+  {
+    id: 1,
+    name: "Ayodeji Olotu",
+  },
+  {
+    id: 2,
+    name: "Agugua Chika",
+  },
+  {
+    id: 3,
+    name: "Ibukun Onasanya",
+  },
+];
