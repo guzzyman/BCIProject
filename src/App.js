@@ -35,12 +35,52 @@ const ROUTES = [
     element: lazy(() => import("dashboard/Dashboard")),
   },
   {
+    path: RouteEnum.DASHBOARD_ADMIN,
+    element: lazy(() => import("admin/AdminDashBoard")),
+  },
+  {
+    path: RouteEnum.DASHBOARD_ADMIN_BREACHTYPE,
+    element: lazy(() => import("admin/AdminDashBoard")),
+  },
+  {
+    path: RouteEnum.DASHBOARD_ADMIN_CATEGORYRANKING,
+    element: lazy(() => import("admin/AdminDashBoard")),
+  },
+  {
+    path: RouteEnum.DASHBOARD_ADMIN_IMPACT,
+    element: lazy(() => import("admin/AdminDashBoard")),
+  },
+  {
+    path: RouteEnum.DASHBOARD_ADMIN_LOCATION,
+    element: lazy(() => import("admin/AdminDashBoard")),
+  },
+  {
     path: RouteEnum.INCIDENT,
-    element: lazy(() => import("incident/Incident")),
-  },  
+    element: lazy(() => import("incident/IncidentAddEdit")),
+  },
+  {
+    path: RouteEnum.INCIDENT_EDIT,
+    element: lazy(() => import("incident/IncidentAddEdit")),
+  },
+  {
+    path: RouteEnum.INCIDENT_DETAILS,
+    element: lazy(() => import("incident/IncidentDetails")),
+  },
   {
     path: RouteEnum.INCIDENT_FIVEWHYS,
     element: lazy(() => import("fivewhys/IncidentFiveWhys")),
+  },
+  {
+    path: RouteEnum.MYBCIS,
+    element: lazy(() => import("mybcis/MyBcis")),
+  },
+  {
+    path: RouteEnum.WORKFLOW,
+    element: lazy(() => import("workflows/WorkFlow")),
+  },
+  {
+    path: RouteEnum.INCIDENT_DETAILS_WORKFLOW,
+    element: lazy(() => import("incident/IncidentDetails")),
   },
 ].map(configureRoute);
 

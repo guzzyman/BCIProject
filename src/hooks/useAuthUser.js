@@ -1,7 +1,11 @@
 import { useSelector } from "react-redux";
+import { bciApi } from "dashboard/DashboardStoreQuerySlice";
+import { useMemo } from "react";
 
 function useAuthUser() {
-  return useSelector((state) => state.global.authUser);
+  const loggedInUser = bciApi.useGetLoggedInUserQuery();
+  const loggedInUserQueryResults = loggedInUser?.data || [];
+  return loggedInUserQueryResults; //useSelector((state) => state.global.authUser);
 }
 
 export default useAuthUser;

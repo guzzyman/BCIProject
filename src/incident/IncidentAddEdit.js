@@ -1,5 +1,5 @@
-import { useMemo } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
+import { generatePath, useNavigate, useParams } from "react-router-dom";
 import { DateTimePicker, DatePicker, LoadingButton } from "@mui/lab";
 import {
   Button,
@@ -18,6 +18,10 @@ import { getTextFieldFormikProps } from "common/Utils";
 import DynamicTable from "common/DynamicTable";
 import { bciApi } from "./IncidentStoreQuerySlice";
 import useTable from "hooks/useTable";
+import innerPageBanner from "assets/innerPageBanner.jpg";
+import { RouteEnum } from "common/Constants";
+import useAuthUser from "hooks/useAuthUser";
+import BciSubmissionModal from "./BciSubmissionModal";
 
 function Incident(props) {
   const { enqueueSnackbar } = useSnackbar();
@@ -26,21 +30,36 @@ function Incident(props) {
   const isEdit = !!id;
 
   const [addBCIMutation, { isLoading }] = bciApi.useAddBCIMutation();
+  const [updateBCIMutation] = bciApi.useUpdateBCIMutation(id, {
+    skip: !id,
+  });
   const breachType = bciApi.useGetIncidentTypeQuery();
   const getBCICategory = bciApi.useGetIncidentCategoryQuery();
+  const authUser = useAuthUser();
   const bciCategoryOptions = getBCICategory?.data;
   const getCategoryRanking = bciApi.useGetCategoryRankingQuery();
   const categoryRankingOptions = getCategoryRanking?.data;
   const getImpact = bciApi.useGetImpactQuery();
   const impactOptions = getImpact?.data;
+  const bciData = bciApi.useGetBciByIdQuery(id, {
+    skip: !id,
+  });
+
+  console.log(bciData)
+
+  const [openModal, setOpenModal] = useState(false);
+  const [_navigationId, _setNavigationId] = useState(0);
+  const authenticatedUser = authUser?.username;
+  const reportsTo = authUser?.reportsTo?.username;
+  const modalNavigationId = _navigationId;
 
   const formik = useFormik({
     initialValues: {
       id: 0,
       dateCreated: "2022-03-14T22:10:03.474Z",
       lastModified: "2022-03-14T22:10:03.474Z",
-      createdBy: "string",
-      modifiedBy: "string",
+      createdBy: `${authenticatedUser}`,
+      modifiedBy: isEdit ? authenticatedUser : "",
       isDeleted: true,
       breachTime: "2022-03-14T22:10:03.474Z",
 
@@ -49,7 +68,7 @@ function Incident(props) {
       breachTitle: "",
       breachDetail: "",
       breachType: "",
-      detector: "G.O",
+      detector: "",
       dateDetected: "2022-03-14T22:10:03.474Z",
       description: "",
       companyImpact: "",
@@ -61,6 +80,7 @@ function Incident(props) {
       currentState: "",
       bciActions: [],
       incidentRanking: [],
+      approver: `${reportsTo}`,
 
       controlWeakness: "string",
       supervisoryWeakness: "string",
@@ -80,8 +100,6 @@ function Incident(props) {
       breachTitle: yup.string().trim().required(),
       breachDetail: yup.string().trim().required(),
       breachType: yup.string().trim().required(),
-      // detector: yup.string().trim().required(),
-      // dateDetected: yup.string().trim().required(),
       description: yup.string().trim().required(),
       companyImpact: yup.string().trim().required(),
       customerImpact: yup.string().trim().required(),
@@ -89,27 +107,90 @@ function Incident(props) {
       companyImpactComment: yup.string().trim().required(),
       incidentCause: yup.string().trim().required(),
     }),
-    onSubmit: async (values) => {
+    onSubmit: async (values, helper) => {
       const _value = values;
       if (!!formik.values.breachDate) {
         breachDate: new Date(_value.breachDate);
-        console.log(_value.breachDate);
       }
       try {
-        // const func = isEdit ? "" : "";
-        await addBCIMutation({ ..._value }).unwrap();
+        let { id } = await addBCIMutation({ ..._value }).unwrap();
         enqueueSnackbar(
-          isEdit ? `BCI Added Successfully` : `BCI Updated Successfully`,
+          isEdit ? `BCI Updated Successfully` : `BCI Added Successfully`,
           { variant: "success" }
         );
-        navigate(-1);
+        const navigationId = id;
+        const loadModal = (navigationId) => {
+          if (navigationId > 0) {
+            console.log("We dey here o", navigationId);
+            setOpenModal(true);
+            _setNavigationId(navigationId);
+          }
+        };
+        {
+          isEdit ? setOpenModal(false) : loadModal(navigationId);
+        }
       } catch (error) {
-        console.log("Error o >>>> ",error)
         enqueueSnackbar(`Failed to create BCI`, { variant: "error" });
       }
     },
   });
   const dataRef = useDataRef({ formik });
+
+  useEffect(() => {
+    if (isEdit) {
+      dataRef.current.formik.setValues({
+        id: id,
+        dateCreated: bciData?.data?.dateCreated || "",
+        lastModified: bciData?.data?.lastModified || "",
+        createdBy: bciData?.data?.createdBy || "",
+        modifiedBy: bciData?.data?.modifiedBy || "",
+        isDeleted: bciData?.data?.isDeleted || false,
+        breachTime: bciData?.data?.breachTime || "2022-03-14T22:10:03.474Z",
+        bciID: bciData?.data?.bciID || "",
+        breachDate: bciData?.data?.breachDate || "",
+        breachTitle: bciData?.data?.breachTitle || "",
+        breachDetail: bciData?.data?.breachDetail || "",
+        breachType: bciData?.data?.breachType || "",
+        detector: bciData?.data?.detector || "",
+        dateDetected: bciData?.data?.dateDetected || "2022-03-14T22:10:03.474Z",
+        description: bciData?.data?.description || "",
+        companyImpact: bciData?.data?.companyImpact || "",
+        customerImpact: bciData?.data?.customerImpact || "",
+        comment: bciData?.data?.comment || "",
+        incidentCause: bciData?.data?.incidentCause || "",
+        reportBy: bciData?.data?.reportBy || "",
+        companyImpactComment: bciData?.data?.companyImpactComment || "",
+        currentState: bciData?.data?.currentState || "",
+        bciActions:
+          bciData?.data?.bciActions?.map((item) => ({
+            ...defaultBciAction,
+            id: item?.id || "",
+            bciRegisterID: item?.bciRegisterID || "",
+            preliminaryAction: item?.preliminaryAction || "",
+            actionDate: item?.actionDate || "",
+            actionParty: item?.actionParty || "",
+          })) || [],
+        incidentRanking:
+          bciData?.data?.incidentRanking?.map((item) => ({
+            ...defaultIncidentRanking,
+            bciRegisterId: item?.id || "",
+            category: item?.category || "",
+            categoryRanking: item?.categoryRanking || "",
+          })) || [],
+        controlWeakness: bciData?.data?.controlWeakness || "string",
+        supervisoryWeakness: bciData?.data?.supervisoryWeakness || "string",
+        resolution: bciData?.data?.resolution || "string",
+        resolutionDate:
+          bciData?.data?.resolutionDate || "2022-03-14T22:10:03.474Z",
+        keyLearningPoint: bciData?.data?.keyLearningPoint || "string",
+        proposedChange: bciData?.data?.proposedChange || "string",
+        doc: bciData?.data?.doc || "string",
+        status: bciData?.data?.status || "string",
+        reportDate: bciData?.data?.reportDate || "2022-03-14T22:10:03.474Z",
+        remark: bciData?.data?.remark || "string",
+      });
+    }
+  }, [isEdit, defaultIncidentRanking, defaultBciAction]);
 
   const columns = useMemo(
     () => [
@@ -152,11 +233,6 @@ function Incident(props) {
               `incidentRanking[${row?.index}].categoryRanking`
             )}
           >
-            {/* {categoryRankingOptions?.map((option) => {
-              <MenuItem key={option?.id} value={option?.id}>
-                {option?.ranking}
-              </MenuItem>;
-            })} */}
             {categoryRankingOptions &&
               categoryRankingOptions?.map((options) => (
                 <MenuItem key={options?.id} value={options?.ranking}>
@@ -229,16 +305,6 @@ function Incident(props) {
         Header: "Action Date",
         accessor: "actionDate",
         Cell: ({ row }) => (
-          // <TextField
-          //   fullWidth
-          //   variant="outlined"
-          //   label="Action Date"
-          //   className="mt-2"
-          //   {...getTextFieldFormikProps(
-          //     dataRef.current.formik,
-          //     `bciActions[${row.index}].actionDate`
-          //   )}
-          // />
           <DatePicker
             label="Incident Date/Time"
             value={
@@ -291,13 +357,13 @@ function Incident(props) {
   const tableInstance = useTable({
     columns,
     data: formik.values.incidentRanking,
-    hideRowCounter:true,
+    hideRowCounter: true,
   });
 
   const bciActionsTableInstance = useTable({
     columns: bciActionsColumns,
     data: formik.values.bciActions,
-    hideRowCounter:true,
+    hideRowCounter: true,
   });
 
   const defaultDetectedBy = [
@@ -317,6 +383,23 @@ function Incident(props) {
 
   return (
     <>
+      {openModal && (
+        <BciSubmissionModal
+          title=""
+          open={openModal}
+          onClose={() => setOpenModal(false)}
+          modalNavigationId={modalNavigationId}
+          // helper={helper}
+          navigate={navigate}
+        />
+      )}
+      <div className="flex h-200">
+        <img
+          src={innerPageBanner}
+          alt="contact-now"
+          className="w-full h-full"
+        />
+      </div>
       <div className="flex mb-4">
         <Typography variant="h4" className="font-bold mt-4">
           Incident Register
@@ -575,7 +658,7 @@ function Incident(props) {
         <div className="flex items-center justify-end gap-4">
           <Button color="error">Cancel</Button>
           <LoadingButton loading={isLoading} onClick={formik.handleSubmit}>
-            Submit
+            {isEdit ? `Update BCI` : `Submit BCI`}
           </LoadingButton>
         </div>
       </div>

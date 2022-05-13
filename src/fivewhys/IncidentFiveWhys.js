@@ -1,6 +1,6 @@
 import { useMemo } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { DateTimePicker, DatePicker, LoadingButton } from "@mui/lab";
+import { generatePath, useNavigate, useParams } from "react-router-dom";
+import { DatePicker, LoadingButton } from "@mui/lab";
 import {
   Button,
   MenuItem,
@@ -18,6 +18,9 @@ import { getTextFieldFormikProps } from "common/Utils";
 import DynamicTable from "common/DynamicTable";
 import { bciApi } from "./FiveWhyStoreQuerySlice";
 import useTable from "hooks/useTable";
+import innerPageBanner from "assets/innerPageBanner.jpg";
+import { RouteEnum } from "common/Constants";
+
 
 function IncidentFiveWhys(props) {
   const { enqueueSnackbar } = useSnackbar();
@@ -26,47 +29,47 @@ function IncidentFiveWhys(props) {
   const isEdit = !!id;
 
   const ratingQueryOptions = bciApi.useGetRatingQuery();
-
-  // const [addBCIMutation, { isLoading }] = bciApi.useAddBCIMutation();
-
+  const [addRCAMutation, { isLoading }] = bciApi.useAddRCAMutation();
 
   const formik = useFormik({
     initialValues: {
-      bciRegisterId: 0,
+      bciRegisterId: id,
       problemDefinition: "",
       problemOwner: "",
       rating: "",
-      rcaDate: "", //2022-03-17T22:30:21.322Z
+      rcaDate: null,
       status: "string",
       rcaSolutionObjectives: [],
       rcaWhys: [],
       rcaReviewTeamMembers: [],
-      rcaActions: [],
+      rcaProposedActions: [],
     },
     validateOnChange: false,
     validateBlur: false,
     validationSchema: yup.object({
       problemDefinition: yup.string().trim().required(),
       problemOwner: yup.string().trim().required(),
-      rating: yup.string().trim().required(),
-      rcaDate: yup.string().trim().required(),
     }),
-    onSubmit: async (values) => {
+    onSubmit: async (values, helper) => {
       const _value = values;
-      if (!!formik.values.breachDate) {
-        breachDate: new Date(_value.breachDate);
-        console.log(_value.breachDate);
+      if (!!formik.values.rcaDate) {
+        rcaDate: new Date(_value.rcaDate);
       }
       try {
-        // const func = isEdit ? "" : "";
-        // await addBCIMutation({ ..._value }).unwrap();
+        await addRCAMutation({ ..._value }).unwrap();
         enqueueSnackbar(
-          isEdit ? `BCI Added Successfully` : `BCI Updated Successfully`,
+          isEdit ? `RCA Updated Successfully` : `RCA Added Successfully`,
           { variant: "success" }
         );
-        navigate(-1);
+        helper.resetForm();
+        navigate(
+          generatePath(
+            RouteEnum.INCIDENT_DETAILS,
+            { id }
+          )
+        )
       } catch (error) {
-        enqueueSnackbar(`Failed to create BCI`, { variant: "error" });
+        enqueueSnackbar(`Failed to create RCA`, { variant: "error" });
       }
     },
   });
@@ -153,7 +156,7 @@ function IncidentFiveWhys(props) {
         accessor: "solutionbjective",
         Cell: ({ row }) => (
           <TextField
-          className="mt-4 mb-4"
+            className="mt-4 mb-4"
             variant="outlined"
             multiline
             rows={4}
@@ -204,7 +207,7 @@ function IncidentFiveWhys(props) {
             className="mt-4 mb-4"
             {...getTextFieldFormikProps(
               dataRef.current.formik,
-              `rcaActions[${row.index}].action`
+              `rcaProposedActions[${row.index}].action`
             )}
           />
         ),
@@ -220,7 +223,7 @@ function IncidentFiveWhys(props) {
             className="mt-2"
             {...getTextFieldFormikProps(
               dataRef.current.formik,
-              `rcaActions[${row.index}].actionParty`
+              `rcaProposedActions[${row.index}].actionParty`
             )}
           />
         ),
@@ -232,12 +235,12 @@ function IncidentFiveWhys(props) {
           <DatePicker
             label="Review Date"
             value={
-              dataRef.current.formik.values?.rcaActions[`${row.index}`]
+              dataRef.current.formik.values?.rcaProposedActions[`${row.index}`]
                 .reviewDate
             }
             onChange={(newValue) => {
               dataRef.current.formik.setFieldValue(
-                `rcaActions[${row.index}].reviewDate`,
+                `rcaProposedActions[${row.index}].reviewDate`,
                 newValue
               );
             }}
@@ -248,7 +251,7 @@ function IncidentFiveWhys(props) {
                 required
                 {...getTextFieldFormikProps(
                   dataRef.current.formik,
-                  `rcaActions[${row.index}].reviewDate`
+                  `rcaProposedActions[${row.index}].reviewDate`
                 )}
                 {...params}
               />
@@ -264,10 +267,10 @@ function IncidentFiveWhys(props) {
           <IconButton
             onClick={() => {
               const newRcaActions = [
-                ...dataRef.current.formik.values["rcaActions"],
+                ...dataRef.current.formik.values["rcaProposedActions"],
               ];
               newRcaActions.splice(row.index, 1);
-              dataRef.current.formik.setFieldValue("rcaActions", newRcaActions);
+              dataRef.current.formik.setFieldValue("rcaProposedActions", newRcaActions);
             }}
           >
             <Icon>delete</Icon>
@@ -332,29 +335,36 @@ function IncidentFiveWhys(props) {
   const tableInstance = useTable({
     columns,
     data: formik.values.rcaWhys,
-    hideRowCounter:true,
+    hideRowCounter: true,
   });
 
   const rcaSolutionObjectivesTableInstance = useTable({
     columns: rcaSolutionObjectivesColumns,
     data: formik.values.rcaSolutionObjectives,
-    hideRowCounter:true,
+    hideRowCounter: true,
   });
 
   const rcaActionsTableInstance = useTable({
     columns: rcaActionsColumns,
-    data: formik.values.rcaActions,
-    hideRowCounter:true,
+    data: formik.values.rcaProposedActions,
+    hideRowCounter: true,
   });
 
   const reviewTeamMembersTableInstance = useTable({
     columns: reviewTeamMembersColumns,
     data: formik.values.rcaReviewTeamMembers,
-    hideRowCounter:true,
+    hideRowCounter: true,
   });
 
   return (
     <>
+      <div className="flex h-200">
+        <img
+          src={innerPageBanner}
+          alt="contact-now"
+          className="w-full h-full"
+        />
+      </div>
       <div className="flex mb-4">
         <Typography variant="h4" className="font-bold mt-4">
           Root Cause Analysis (RCA)
@@ -500,8 +510,8 @@ function IncidentFiveWhys(props) {
                   className="mb-4"
                   startIcon={<Icon>add</Icon>}
                   onClick={() =>
-                    formik.setFieldValue("rcaActions", [
-                      ...dataRef.current.formik.values.rcaActions,
+                    formik.setFieldValue("rcaProposedActions", [
+                      ...dataRef.current.formik.values.rcaProposedActions,
                       { ...defaultRCAAction },
                     ])
                   }
@@ -516,7 +526,9 @@ function IncidentFiveWhys(props) {
 
         <div className="flex items-center justify-end gap-4">
           <Button color="error">Cancel</Button>
-          <LoadingButton type="submit">Submit</LoadingButton>
+          <LoadingButton loading={isLoading} onClick={formik.handleSubmit}>
+            Submit
+          </LoadingButton>
         </div>
       </div>
     </>
@@ -527,22 +539,22 @@ export default IncidentFiveWhys;
 const defaultSolutionObjectives = {
   id: 0,
   rcaID: 0,
-  solutionObjective: "string",
+  solutionObjective: "",
 };
 
 const defaultRCAWhys = {
   id: 0,
   rcaID: 0,
-  why: "string",
-  comment: "string",
-  rootCause: "string",
+  why: "",
+  comment: "",
+  rootCause: "",
 };
 
 const defaultRCAReviewTeamMembers = {
   id: 0,
   rcaID: 0,
-  member: "string",
-  status: "string",
+  member: "",
+  status: "",
   statusDate: "2022-03-17T22:30:21.322Z",
 };
 

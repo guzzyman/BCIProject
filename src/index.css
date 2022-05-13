@@ -8,5 +8,7 @@ body,
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   height: 100%;
-  background-color: inherit;
+  background-color: #f5f6f9;
 }
+
+

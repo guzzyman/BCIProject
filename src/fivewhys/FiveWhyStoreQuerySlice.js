@@ -8,6 +8,13 @@ export const bciApi = baseApi.injectEndpoints({
         url: "/EnumHelper/GetRatingsSelectionList",
       }),
     }), 
+    addRCA: builder.mutation({
+      query:(data)=>({
+        url:"/Rca/",
+        data,
+        method: "post",
+      })
+    }),    
     // getIncidentCategory: builder.query({
     //   query: () => ({
     //     url: "/IncidentCategory",
@@ -22,13 +29,6 @@ export const bciApi = baseApi.injectEndpoints({
     //   query: () => ({
     //     url: "/Impact",
     //   }),
-    // }),  
-    // addBCI: builder.mutation({
-    //   query:(data)=>({
-    //     url:"/BciRegister/",
-    //     data,
-    //     method: "post",
-    //   })
-    // }),    
+    // }),      
   }),
 });

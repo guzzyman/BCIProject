@@ -9,7 +9,8 @@ export const baseApi = createApi({
   baseQuery: axiosBaseQuery({ url: "https://localhost:7228/api/v1" }, baseHttp),
   endpoints: (builder) => ({}),
 });
-
+// https://localhost:7228/api/v1
+// https://bny-s-t68/BCI.WebApi.Core/api/v1/
 [baseApi].forEach((api) => {
   api.enhanceEndpoints({ addTagTypes: Object.values(RtkqTagEnum) });
 });

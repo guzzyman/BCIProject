@@ -17,12 +17,44 @@ export const MediaQueryBreakpointEnum = {
 
 export const RouteEnum = {
   DASHBOARD: "/",
+  DASHBOARD_ADMIN: "/dashboard/admin",
+  DASHBOARD_ADMIN_BREACHTYPE: "/dashboard/admin/breachtype/:id",
+  DASHBOARD_ADMIN_CATEGORYRANKING: "/dashboard/admin/categoryranking/:id",
+  DASHBOARD_ADMIN_IMPACT: "/dashboard/admin/impact/:id",
+  DASHBOARD_ADMIN_INCIDENTRANKING: "/dashboard/admin/incidentranking/:id",
+  DASHBOARD_ADMIN_LOCATION: "/dashboard/admin/location/:id",
   INCIDENT: "/incident",
-  INCIDENT_FIVEWHYS: "/fivewhys"
+  INCIDENT_DETAILS: "/incident/:id",
+  INCIDENT_DETAILS_WORKFLOW: "/incident/:id/:tabname",
+  INCIDENT_EDIT: "/incident/edit/:id",
+  INCIDENT_FIVEWHYS: "/fivewhys/:id",
+  MYBCIS:"/mybcis",
+  WORKFLOW:"/workflow"
 };
 
 export const RtkqTagEnum = {
   DASHBOARD: 'DASHBOARD',
+};
+
+export const dateMonths = [
+  undefined,
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
+
+export const TABLE_PAGINATION_DEFAULT = {
+  offset: 0,
+  limit: 20,
 };
 
 export const CurrencyEnum = {

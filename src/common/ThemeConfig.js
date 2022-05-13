@@ -25,7 +25,7 @@ export const theme = customizeComponents({
   },
   typography: {
     fontFamily: ["Nunito Sans", "sans-serif"].join(),
-    fontSize: 10.5,
+    fontSize: 12.5,
     button: {
       textTransform: "none",
     },

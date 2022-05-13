@@ -1,17 +1,17 @@
-import { RtkqTagEnum } from "common/Constants";
-import { baseApi, providesTags } from "common/StoreQuerySlice";
+// import { RtkqTagEnum } from "common/Constants";
+import { baseApi } from "common/StoreQuerySlice";
 
 export const bciApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    getIncidentCategory: builder.query({
+    getDashboardStats: builder.query({
       query: () => ({
-        url: "/IncidentCategory",
+        url: "/Dashboard/GetGeneralStats",
       }),
     }),
-    getCategoryRanking: builder.query({
-        query: () => ({
-          url: "/CategoryRanking",
-        }),
+    getLoggedInUser: builder.query({
+      query: () => ({
+        url: "/UserManagement/GetLoggedInUser",
       }),
+    }),
   }),
 });

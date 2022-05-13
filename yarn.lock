@@ -7430,6 +7430,11 @@ react-is@^17.0.1, react-is@^17.0.2:
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-17.0.2.tgz#e691d4a8e9c789365655539ab372762b0efb54f0"
   integrity sha512-w2GsyukL62IJnlaff/nRegPQR94C/XXamvMWmSHRJ4y7Ts/4ocGRmTHvOs8PSE6pB3dWOrD/nueuU5sduBsQ4w==
 
+react-mui-confirm@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/react-mui-confirm/-/react-mui-confirm-1.0.1.tgz#3f926623d9517dbcd5933d010a76ba327b6c73f6"
+  integrity sha512-tSGVZfFYrefBh/N8nOeIJAt3nwmFZi7roU9F9P/31iplTvZEAp/v5deA81xYH6dfTZ3e7mcPDKXIn2q75EU44w==
+
 react-redux@^7.2.6:
   version "7.2.6"
   resolved "https://registry.yarnpkg.com/react-redux/-/react-redux-7.2.6.tgz#49633a24fe552b5f9caf58feb8a138936ddfe9aa"

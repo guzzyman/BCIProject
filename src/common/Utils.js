@@ -1,5 +1,6 @@
 import dfnFormat from "date-fns/format";
 import * as yup from "yup";
+import { dateMonths } from "./Constants";
 
 export function formatTableDate(date) {
   return dfnFormat(new Date(date), "dd MMM, yyyy");
@@ -241,3 +242,38 @@ export function configureRoute(route) {
   }
   return configured;
 }
+
+/**
+ * format stringified number which length is less than 10 to DD e.g 02.
+ * @param {number} number
+ * @returns
+ */
+ function formatNumberToDD(number) {
+  let suffix = "0";
+  let numberStr = number.toString();
+  if (numberStr.length === 1) {
+    numberStr = suffix.concat(numberStr);
+  }
+  return numberStr;
+}
+
+/**
+ *
+ * @param {Array} date
+ * @returns
+ */
+ export const parseDateToString = (date) => {
+  const year = date?.[0] || "";
+  const month = dateMonths[date?.[1]] || "";
+  const day = date?.[2] || "";
+
+  let seperator = Array.isArray(date) && date.length ? " " : "";
+  let newDate =
+    formatNumberToDD(day) +
+    seperator +
+    formatNumberToDD(month) +
+    seperator +
+    year;
+
+  return newDate;
+};

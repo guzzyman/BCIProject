@@ -1,5 +1,6 @@
 import { ThemeProvider, CssBaseline } from "@mui/material";
 import theme from "common/ThemeConfig";
+import { ConfirmDialogProvider } from "react-mui-confirm";
 
 /**
  *
@@ -8,8 +9,10 @@ import theme from "common/ThemeConfig";
 export function AppThemeProvider(props) {
   return (
     <ThemeProvider theme={theme}>
-      <CssBaseline />
-      {props.children}
+      <ConfirmDialogProvider>
+        <CssBaseline />
+        {props.children}
+      </ConfirmDialogProvider>
     </ThemeProvider>
   );
 }

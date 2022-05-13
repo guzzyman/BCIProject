@@ -6,7 +6,7 @@ function AppFooter(props) {
       <Toolbar>
         <Container className="mt-10 mb-10">
           <Typography variant="h6">
-            2021 © NLNG. BCI
+            {new Date().getFullYear()} © NLNG. Business Control Incidents (BCIs)
           </Typography>
         </Container>
       </Toolbar>
