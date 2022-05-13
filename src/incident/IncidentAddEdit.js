@@ -45,13 +45,23 @@ function Incident(props) {
     skip: !id,
   });
 
-  console.log(bciData)
-
   const [openModal, setOpenModal] = useState(false);
   const [_navigationId, _setNavigationId] = useState(0);
   const authenticatedUser = authUser?.username;
   const reportsTo = authUser?.reportsTo?.username;
   const modalNavigationId = _navigationId;
+  const loadModal = (navigationId) => {
+    if (navigationId > 0) {
+      setOpenModal(true);
+      _setNavigationId(navigationId);
+    }
+  };
+  const navigateToRca = (modalNavigationId) => {
+    setOpenModal(false);
+    navigate(
+      generatePath(RouteEnum.INCIDENT_FIVEWHYS, { id: modalNavigationId })
+    );
+  };
 
   const formik = useFormik({
     initialValues: {
@@ -109,25 +119,22 @@ function Incident(props) {
     }),
     onSubmit: async (values, helper) => {
       const _value = values;
+      const _bciRegisteredId = formik?.values?.bciID;
       if (!!formik.values.breachDate) {
         breachDate: new Date(_value.breachDate);
       }
       try {
-        let { id } = await addBCIMutation({ ..._value }).unwrap();
+        let _bciId = isEdit
+          ? await updateBCIMutation({ _bciRegisteredId, ..._value }).unwrap()
+          : await addBCIMutation({ ..._value }).unwrap();
         enqueueSnackbar(
           isEdit ? `BCI Updated Successfully` : `BCI Added Successfully`,
           { variant: "success" }
         );
-        const navigationId = id;
-        const loadModal = (navigationId) => {
-          if (navigationId > 0) {
-            console.log("We dey here o", navigationId);
-            setOpenModal(true);
-            _setNavigationId(navigationId);
-          }
-        };
+        const navigationId = _bciId;
+        console.log(_bciRegisteredId);
         {
-          isEdit ? setOpenModal(false) : loadModal(navigationId);
+          isEdit ? navigateToRca(_bciRegisteredId) : loadModal(navigationId);
         }
       } catch (error) {
         enqueueSnackbar(`Failed to create BCI`, { variant: "error" });
@@ -146,7 +153,7 @@ function Incident(props) {
         modifiedBy: bciData?.data?.modifiedBy || "",
         isDeleted: bciData?.data?.isDeleted || false,
         breachTime: bciData?.data?.breachTime || "2022-03-14T22:10:03.474Z",
-        bciID: bciData?.data?.bciID || "",
+        bciID: id || "",
         breachDate: bciData?.data?.breachDate || "",
         breachTitle: bciData?.data?.breachTitle || "",
         breachDetail: bciData?.data?.breachDetail || "",
@@ -188,6 +195,7 @@ function Incident(props) {
         status: bciData?.data?.status || "string",
         reportDate: bciData?.data?.reportDate || "2022-03-14T22:10:03.474Z",
         remark: bciData?.data?.remark || "string",
+        approver: `${reportsTo}`,
       });
     }
   }, [isEdit, defaultIncidentRanking, defaultBciAction]);

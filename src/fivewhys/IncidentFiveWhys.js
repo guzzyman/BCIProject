@@ -64,7 +64,7 @@ function IncidentFiveWhys(props) {
         helper.resetForm();
         navigate(
           generatePath(
-            RouteEnum.INCIDENT_DETAILS,
+            RouteEnum.INCIDENT_FIVEWHYS,
             { id }
           )
         )

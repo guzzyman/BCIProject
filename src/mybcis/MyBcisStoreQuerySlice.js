@@ -13,5 +13,10 @@ export const bciApi = baseApi.injectEndpoints({
         url: "/Rca",
       }),
     }),   
+    getBciByUserId: builder.query({
+      query: (userId) => ({
+        url: `/BciRegister/BciByUserId/${userId}`,
+      }),
+    }),    
   }),
 });

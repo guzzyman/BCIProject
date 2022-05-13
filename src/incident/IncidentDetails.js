@@ -31,7 +31,12 @@ function IncidentDetails(props) {
   const { enqueueSnackbar } = useSnackbar();
   const authUser = useAuthUser();
   const isInitiator = authUser?.roles?.includes("Initiator");
-  const isApproval = authUser?.roles?.includes("Initiator");
+  const givenRole = authUser?.roles;
+  const isApproval =
+    givenRole?.includes("RcaReviewTeam") ||
+    givenRole?.includes("ProcessReviewTeam") ||
+    givenRole?.includes("InitiatorManager") ||
+    givenRole?.includes("ProcessManager");
   const { id, tabname } = useParams();
   const isEdit = !!id;
   const { data, isLoading, isError, refetch } = bciApi.useGetBciByIdQuery(id);

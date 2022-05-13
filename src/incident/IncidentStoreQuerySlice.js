@@ -38,8 +38,8 @@ export const bciApi = baseApi.injectEndpoints({
       }),
     }),
     updateBCI: builder.mutation({
-      query: (data) => ({
-        url: `/BciRegister/${data.id}`,
+      query: ({id, ...data}) => ({
+        url: `/BciRegister/${id}`,
         data,
         method: "put",
       }),

@@ -126,19 +126,28 @@ function WorkFlowList(props) {
 
   return (
     <>
-      <Typography variant="h6" className="font-bold">
-        {tabName}
-      </Typography>
-      <div className="h-10">
-        Kindly <strong>Approve/Reject</strong> the application(s) below by
-        clicking on the details icon
-      </div>
-      <DynamicTable
-        instance={myBCITableInstance}
-        loading={isLoading}
-        error={isError}
-        onReload={refetch}
-      />
+      {authUser?.roles?.includes("RcaReviewTeam") ||
+      authUser?.roles?.includes("ProcessReviewTeam") ||
+      authUser?.roles?.includes("InitiatorManager") ||
+      authUser?.roles?.includes("ProcessManager") ? (
+        <div>
+          <Typography variant="h6" className="font-bold">
+            {tabName}
+          </Typography>
+          <div className="h-10">
+            Kindly <strong>Approve/Reject</strong> the application(s) below by
+            clicking on the details icon
+          </div>
+          <DynamicTable
+            instance={myBCITableInstance}
+            loading={isLoading}
+            error={isError}
+            onReload={refetch}
+          />
+        </div>
+      ) : (
+        navigate(generatePath(RouteEnum.DASHBOARD))
+      )}
     </>
   );
 }
