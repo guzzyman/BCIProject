@@ -6,7 +6,7 @@ import { baseHttp } from "./Http";
 export const baseApi = createApi({
   reducerPath: "baseApi",
   keepUnusedDataFor: 60 * 60,
-  baseQuery: axiosBaseQuery({ url: "https://localhost:7228/api/v1" }, baseHttp),
+  baseQuery: axiosBaseQuery({ url: "/api/v1" }, baseHttp),
   endpoints: (builder) => ({}),
 });
 // https://localhost:7228/api/v1
