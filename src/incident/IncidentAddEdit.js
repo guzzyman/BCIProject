@@ -118,23 +118,23 @@ function Incident(props) {
       incidentCause: yup.string().trim().required(),
     }),
     onSubmit: async (values, helper) => {
-      const _value = values;
+      const _values = values;
       const _bciRegisteredId = formik?.values?.bciID;
       if (!!formik.values.breachDate) {
-        breachDate: new Date(_value.breachDate);
+        breachDate: new Date(_values.breachDate);
       }
       try {
         let _bciId = isEdit
-          ? await updateBCIMutation({ _bciRegisteredId, ..._value }).unwrap()
-          : await addBCIMutation({ ..._value }).unwrap();
+          ? await updateBCIMutation({ _bciRegisteredId, ..._values }).unwrap()
+          : await addBCIMutation({ ..._values }).unwrap();
         enqueueSnackbar(
           isEdit ? `BCI Updated Successfully` : `BCI Added Successfully`,
           { variant: "success" }
         );
         const navigationId = _bciId;
-        console.log(_bciRegisteredId);
+        console.log(navigationId);
         {
-          isEdit ? navigateToRca(_bciRegisteredId) : loadModal(navigationId);
+          isEdit ? navigateToRca(_bciRegisteredId) : loadModal(navigationId?.id);
         }
       } catch (error) {
         enqueueSnackbar(`Failed to create BCI`, { variant: "error" });

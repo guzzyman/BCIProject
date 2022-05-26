@@ -2,6 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { IconButton, Icon } from "@mui/material";
 import "./index.css";
+import "./web.config";
 import "common/HttpInterceptor";
 import { notistackRef } from "common/Constants";
 import { BrowserRouter } from "react-router-dom";
