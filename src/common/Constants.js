@@ -25,15 +25,16 @@ export const RouteEnum = {
   DASHBOARD_ADMIN_LOCATION: "/dashboard/admin/location/:id",
   INCIDENT: "/incident",
   INCIDENT_DETAILS: "/incident/:id",
+  INCIDENT_DETAILS_PROCESS_BCIREQUEST: "/incident/:NextAction/:id/:RoleId",
   INCIDENT_DETAILS_WORKFLOW: "/incident/:id/:tabname",
   INCIDENT_EDIT: "/incident/edit/:id",
   INCIDENT_FIVEWHYS: "/fivewhys/:id",
-  MYBCIS:"/mybcis",
-  WORKFLOW:"/workflow"
+  MYBCIS: "/mybcis",
+  WORKFLOW: "/workflow",
 };
 
 export const RtkqTagEnum = {
-  DASHBOARD: 'DASHBOARD',
+  DASHBOARD: "DASHBOARD",
 };
 
 export const dateMonths = [
@@ -136,4 +137,9 @@ export const DateConfig = {
   LOCALE: "en",
   FORMAT: "dd-MMMM-yyyy",
   HYPHEN_dd_MM_yyyy: "dd-MM-yyyy",
+};
+
+export const StoreQueryTagEnum = {
+  INCIDENT_DETAILS_PROCESS_BCIREQUEST:'INCIDENT_DETAILS_PROCESS_BCIREQUEST',
+  INCIDENT_DETAILS:'INCIDENT_DETAILS'
 };

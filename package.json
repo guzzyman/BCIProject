@@ -1,6 +1,6 @@
 {
   "name": "bci",
-  "homepage": "https://bny-s-t68/BCIPortalNew/",
+  "homepage": "/",
   "version": "0.1.0",
   "private": false,
   "dependencies": {
@@ -15,6 +15,7 @@
     "axios": "^0.26.0",
     "date-fns": "^2.28.0",
     "formik": "^2.2.9",
+    "history": "^5.3.0",
     "notistack": "^2.0.3",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",

@@ -22,6 +22,7 @@ import innerPageBanner from "assets/innerPageBanner.jpg";
 import { RouteEnum } from "common/Constants";
 import useAuthUser from "hooks/useAuthUser";
 import BciSubmissionModal from "./BciSubmissionModal";
+import TextFieldLabelXHelpTooltip from "common/TextFieldLabelXHelpTooltip";
 
 function Incident(props) {
   const { enqueueSnackbar } = useSnackbar();
@@ -76,7 +77,7 @@ function Incident(props) {
       bciID: "",
       breachDate: null,
       breachTitle: "",
-      breachDetail: "",
+      breachDetail: "Breach Detail Here",
       breachType: "",
       detector: "",
       dateDetected: "2022-03-14T22:10:03.474Z",
@@ -87,7 +88,7 @@ function Incident(props) {
       incidentCause: "",
       reportBy: "Ibukun.Onasanya",
       companyImpactComment: "",
-      currentState: "",
+      currentState: "Current State as Is Removed",
       bciActions: [],
       incidentRanking: [],
       approver: `${reportsTo}`,
@@ -108,14 +109,8 @@ function Incident(props) {
     validationSchema: yup.object({
       breachDate: yup.string().trim().required(),
       breachTitle: yup.string().trim().required(),
-      breachDetail: yup.string().trim().required(),
       breachType: yup.string().trim().required(),
       description: yup.string().trim().required(),
-      companyImpact: yup.string().trim().required(),
-      customerImpact: yup.string().trim().required(),
-      comment: yup.string().trim().required(),
-      companyImpactComment: yup.string().trim().required(),
-      incidentCause: yup.string().trim().required(),
     }),
     onSubmit: async (values, helper) => {
       const _values = values;
@@ -134,7 +129,9 @@ function Incident(props) {
         const navigationId = _bciId;
         console.log(navigationId);
         {
-          isEdit ? navigateToRca(_bciRegisteredId) : loadModal(navigationId?.id);
+          isEdit
+            ? navigateToRca(_bciRegisteredId)
+            : loadModal(navigationId?.id);
         }
       } catch (error) {
         enqueueSnackbar(`Failed to create BCI`, { variant: "error" });
@@ -314,7 +311,7 @@ function Incident(props) {
         accessor: "actionDate",
         Cell: ({ row }) => (
           <DatePicker
-            label="Incident Date/Time"
+            label="Action Date"
             value={
               dataRef.current.formik.values?.bciActions[`${row.index}`]
                 .actionDate
@@ -472,17 +469,16 @@ function Incident(props) {
               </TextField>
               <TextField
                 variant="outlined"
-                label="Preliminary Cause of Incident"
+                label={
+                  <TextFieldLabelXHelpTooltip
+                    label="Preliminary Cause of Incident"
+                    title="Please enter observed gap that led to incident if known"
+                  />
+                }
                 fullWidth
                 {...formik.getFieldProps("incidentCause")}
-                error={
-                  !!formik.touched.incidentCause && formik.touched.incidentCause
-                }
-                helperText={
-                  !!formik.touched.incidentCause && formik.touched.incidentCause
-                }
               />
-              <TextField
+              {/* <TextField
                 variant="outlined"
                 label="Current State (As-Is)"
                 fullWidth
@@ -505,7 +501,7 @@ function Incident(props) {
                 helperText={
                   !!formik.touched.breachDetail && formik.touched.breachDetail
                 }
-              />
+              /> */}
               <TextField
                 select
                 variant="outlined"
@@ -522,7 +518,12 @@ function Incident(props) {
               </TextField>
               <TextField
                 variant="outlined"
-                label="Detection Description"
+                label={
+                  <TextFieldLabelXHelpTooltip
+                    label="Incident Description"
+                    title="Kindly describe incident, providing all necessary details. This should include how the incident was detected"
+                  />
+                }
                 multiline={true}
                 rows={6}
                 className="col-span-3"
@@ -621,8 +622,7 @@ function Incident(props) {
             </Typography>
             <div>
               <Typography className="h-10">
-                Rank the incident below. use the <strong>Add button</strong> to
-                add more ranking
+                Rank the incident below in line with <a href="#"><strong>NLNG RAM</strong></a>. Use the <strong>Add button</strong> to add more ranking.
               </Typography>
               <Button
                 className="mb-4"

@@ -23,7 +23,7 @@ import { useSnackbar } from "notistack";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import { useConfirmDialog } from "react-mui-confirm";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 
 function IncidentDetails(props) {
   const navigate = useNavigate();
@@ -37,16 +37,33 @@ function IncidentDetails(props) {
     givenRole?.includes("ProcessReviewTeam") ||
     givenRole?.includes("InitiatorManager") ||
     givenRole?.includes("ProcessManager");
-  const { id, tabname } = useParams();
+  const { id, tabname, NextAction, RoleId } = useParams();
   const isEdit = !!id;
-  const { data, isLoading, isError, refetch } = bciApi.useGetBciByIdQuery(id);
-  const [updateWorkFlowMutation, updateWorkFlowMutationResults] =
-    bciApi.useUpdateWorkFlowMutation(id, { skip: !id });
+  const _NextAction = NextAction;
+  const _BCIId = id;
+  const _RoleId = RoleId;
+  console.log("_NextAction  ==>", _NextAction);
+  console.log("_BCIId  ==>", _BCIId);
+  console.log("_RoleId  ==>", _RoleId);
+  const { data, isLoading, isError, refetch } = bciApi.useGetBciByIdQuery(id, {
+    skip: !id,
+  });
+  const [workFlowExpressMutation, workFlowExpressMutationResults] =
+    bciApi.useAddBciByWorkflowExpressMutation();
+  //.useUpdateWorkFlowMutation(id, { skip: !id });
   const bciDetails = data;
   const incidentRankingData = bciDetails?.incidentRanking;
   const bciActionsData = bciDetails?.bciActions;
   const rcaDetails = bciDetails?.rca;
   const [workFlowReject, setWorkflowReject] = useState(false);
+  const getBciWorkflowByStepId = bciApi.useGetBciWorkflowByStepIdQuery(
+    NextAction,
+    { skip: !NextAction }
+  );
+  const workFlowByStepIdResponse = useMemo(
+    () => getBciWorkflowByStepId?.data,
+    [getBciWorkflowByStepId]
+  );
 
   const incidentRankingTableInstance = useTable({
     columns: incidentRankingColumns,
@@ -94,9 +111,10 @@ function IncidentDetails(props) {
     confirm({
       title: "Are you sure you want to decline approving this record?",
       onConfirm: async () => {
+        values.ApproverStatus = "REJECTED";
         try {
-          await updateWorkFlowMutation({ ...values }).unwrap();
-          enqueueSnackbar(`Process rejected Successfully`, {
+          await workFlowExpressMutation({ ...values }).unwrap();
+          enqueueSnackbar(`Submission rejected Successfully`, {
             variant: "success",
           });
         } catch (error) {
@@ -155,40 +173,57 @@ function IncidentDetails(props) {
 
   const formik = useFormik({
     initialValues: {
-      id: bciRegisteredId,
-      dateCreated: "2022-05-11T16:02:26.325Z",
-      lastModified: "2022-05-11T16:02:26.325Z",
-      createdBy: `${userName}`,
-      modifiedBy: `${userName}`,
-      isDeleted: true,
-      bciRegisterID: bciRegisteredId,
-      status: processFunctionStatus,
-      function: processFunction,
-      comment: "",
-      actionDate: "2022-05-11T16:02:26.325Z",
-      actionedBy: `${userName}`,
-      IsActive: true,
+      BCIid: bciRegisteredId,
+      Approver: userName,
+      CurrentStep: "",
+      ApproverStatus: `${workFlowReject ? "REJECTED" : "APPROVED"}`,
+      ApprovalComment: "",
     },
     validateOnChange: false,
     validateBlur: false,
     validationSchema: yup.object({
-      comment: yup.string().trim().required(),
+      ApprovalComment: yup.string().trim().required(),
     }),
     onSubmit: async (values) => {
+      const _values = values;
+      _values.Approver = userName;
+      _values.CurrentStep = _NextAction;
       try {
+        const submissionResponse = workFlowReject
+          ? handleReject(_values)
+          : await workFlowExpressMutation({ ..._values }).unwrap();
+        // Check if the role in the response is thesame as the role of the user
+        submissionResponse?.action_Party === _RoleId &&
+        submissionResponse?.nextLevelActionRequired === "YES"
+          ? navigate(
+              generatePath(RouteEnum.INCIDENT_DETAILS_PROCESS_BCIREQUEST, {
+                NextAction: submissionResponse?.nextLevel,
+                id: _BCIId,
+                RoleId: submissionResponse?.action_Party,
+              })
+            )
+          : navigate(
+              generatePath(RouteEnum.INCIDENT_DETAILS_PROCESS_BCIREQUEST, {
+                NextAction: submissionResponse?.nextLevel,
+                id: _BCIId,
+                RoleId: submissionResponse?.action_Party,
+              })
+            );
+        // Set the field value to the current step
+        // formik.setFieldValues("CurrentStep", submissionResponse?.nextLevel);
         workFlowReject
-          ? handleReject(values)
-          : await updateWorkFlowMutation({ ...values }).unwrap();
-        enqueueSnackbar(
-          workFlowReject ? undefined : `Process approved Successfully`,
-          {
-            variant: "success",
-          }
-        );
-        navigate(-1);
+          ? enqueueSnackbar(`Submission Successful`, {
+              variant: "success",
+            })
+          : enqueueSnackbar(`Submission Successful`, {
+              variant: "success",
+            });
+        // navigate(-1);
       } catch (error) {
         enqueueSnackbar(
-          workFlowReject ? undefined : `Failed to approve Process`,
+          workFlowReject
+            ? `Failed to reject Process`
+            : `Failed to approve Process`,
           { variant: "error" }
         );
       }
@@ -209,59 +244,6 @@ function IncidentDetails(props) {
         {() => (
           <div className="max-w-full flex justify-center">
             <div className="w-full">
-              {isApproval ? (
-                <>
-                  <Paper className="max-w-full p-4 md:p-4 mb-4">
-                    <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-2 mb-4">
-                      <Grid>
-                        <Typography variant="h6" className="font-bold">
-                          Work Flow Approval/Rejection
-                        </Typography>
-                        <div className="h-10">
-                          Kindly <strong>Approve/Reject</strong> the application
-                          this work flow by clicking any of the buttons below
-                        </div>
-                        <TextField
-                          variant="outlined"
-                          label="Approval/Rejection Comments"
-                          multiline={true}
-                          rows={3}
-                          // className="col-span-3"
-                          fullWidth
-                          {...formik.getFieldProps("comment")}
-                          error={
-                            !!formik.touched.comment && formik.touched.comment
-                          }
-                          helperText={
-                            !!formik.touched.comment && formik.touched.comment
-                          }
-                        />
-                      </Grid>
-                    </div>
-                    <div className="flex-1" />
-                    <div className="flex items-center justify-end gap-4 mt-3">
-                      <LoadingButton
-                        color="error"
-                        loading={isLoading}
-                        onClick={() => {
-                          setWorkflowReject(true);
-                          formik.handleSubmit();
-                        }}
-                      >
-                        Reject
-                      </LoadingButton>
-                      <LoadingButton
-                        loading={isLoading}
-                        onClick={formik.handleSubmit}
-                      >
-                        Approve
-                      </LoadingButton>
-                    </div>
-                  </Paper>
-                </>
-              ) : (
-                <></>
-              )}
               <Paper className="max-w-full p-4 md:p-4 mb-4">
                 <div className="flex items-center justify-end gap-4">
                   {isInitiator ? (
@@ -507,6 +489,69 @@ function IncidentDetails(props) {
                     </div>
                   </div>
                 </Paper>
+              )}
+              {isApproval ? (
+                <>
+                  <Paper className="max-w-full p-4 md:p-4 mb-4">
+                    <div className="grid gap-4 mb-4">
+                      <Grid>
+                        <Typography variant="h6" className="font-bold mb-2">
+                          {workFlowByStepIdResponse
+                            ? workFlowByStepIdResponse[0]?.action_Detail
+                            : "Work Flow Approval/Rejection"}
+                        </Typography>
+                        {/* <div className="h-10">
+                          Kindly <strong>Approve/Reject</strong> the application
+                          this work flow by clicking any of the buttons below
+                        </div> */}
+                        <TextField
+                          variant="outlined"
+                          label="Approval/Rejection Comments"
+                          multiline={true}
+                          rows={3}
+                          // className="col-span-3"
+                          fullWidth
+                          {...formik.getFieldProps("ApprovalComment")}
+                          error={
+                            !!formik.touched.ApprovalComment &&
+                            formik.touched.ApprovalComment
+                          }
+                          helperText={
+                            !!formik.touched.ApprovalComment &&
+                            formik.touched.ApprovalComment
+                          }
+                        />
+                      </Grid>
+                    </div>
+                    <div className="flex-1" />
+                    <div className="flex items-center justify-end gap-4 mt-3">
+                      <LoadingButton
+                        color="error"
+                        loading={isLoading}
+                        onClick={() => {
+                          setWorkflowReject(true);
+                          formik.handleSubmit();
+                        }}
+                      >
+                        {workFlowByStepIdResponse &&
+                        workFlowByStepIdResponse[0]?.decision === "YES"
+                          ? "No"
+                          : "Reject"}
+                      </LoadingButton>
+                      <LoadingButton
+                        loading={isLoading}
+                        onClick={formik.handleSubmit}
+                      >
+                        {workFlowByStepIdResponse &&
+                        workFlowByStepIdResponse[0]?.decision === "YES"
+                          ? "Yes"
+                          : "Approve"}
+                      </LoadingButton>
+                    </div>
+                  </Paper>
+                </>
+              ) : (
+                <></>
               )}
             </div>
           </div>

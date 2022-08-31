@@ -1,4 +1,4 @@
-// import { RtkqTagEnum } from "common/Constants";
+import { StoreQueryTagEnum } from "common/Constants";
 import { baseApi } from "common/StoreQuerySlice";
 
 export const bciApi = baseApi.injectEndpoints({
@@ -38,7 +38,7 @@ export const bciApi = baseApi.injectEndpoints({
       }),
     }),
     updateBCI: builder.mutation({
-      query: ({id, ...data}) => ({
+      query: ({ id, ...data }) => ({
         url: `/BciRegister/${id}`,
         data,
         method: "put",
@@ -48,10 +48,28 @@ export const bciApi = baseApi.injectEndpoints({
       query: (id) => ({
         url: `/BciRegister/${id}`,
       }),
+      providesTags: () => [
+        { type: StoreQueryTagEnum.INCIDENT_DETAILS },
+      ],
     }),
     getLoggedInUser: builder.query({
       query: () => ({
         url: "/UserManagement/GetLoggedInUser",
+      }),
+    }),
+    addBciByWorkflowExpress: builder.mutation({
+      query: (data) => ({
+        url: `/BciRegister/BciByWorkflowExpress?BCIid=${data.BCIid}&Approver=${data.Approver}&CurrentStep=${data.CurrentStep}&ApproverStatus=${data.ApproverStatus}&ApprovalComment=${data.ApprovalComment}`,
+        data,
+        method: "post",
+      }),
+      invalidatesTags: () => [
+        { type: StoreQueryTagEnum.INCIDENT_DETAILS_PROCESS_BCIREQUEST },
+      ],
+    }),
+    getBciWorkflowByStepId: builder.query({
+      query: (id) => ({
+        url: `/BciRegister/BciWorkflowByStepId/${id}`,
       }),
     }),
   }),

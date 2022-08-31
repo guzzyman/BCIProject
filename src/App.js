@@ -6,6 +6,11 @@ import { RouteEnum } from "common/Constants";
 import AppFooter from "AppFooter";
 import AppHeader from "AppHeader";
 import "./App.css";
+import { createBrowserHistory } from 'history';
+
+export const history = createBrowserHistory({
+    basename: process.env.PUBLIC_URL
+});
 
 function App() {
   const routes = useRoutes([
@@ -64,6 +69,10 @@ const ROUTES = [
   },
   {
     path: RouteEnum.INCIDENT_DETAILS,
+    element: lazy(() => import("incident/IncidentDetails")),
+  },
+  {
+    path: RouteEnum.INCIDENT_DETAILS_PROCESS_BCIREQUEST,
     element: lazy(() => import("incident/IncidentDetails")),
   },
   {

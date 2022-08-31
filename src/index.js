@@ -18,7 +18,8 @@ ReactDOM.render(
   <React.StrictMode>
     <LocalizationProvider dateAdapter={AdapterDateFns}>
       <ReduxProvider store={store}>
-        <BrowserRouter basename="/BCIPortalNew">
+        {/*basename="/BCIPortalNew"*/}
+        <BrowserRouter>
           <AppThemeProvider>
             <SnackbarProvider
               ref={notistackRef}
