@@ -8,6 +8,9 @@ import {
   IconButton,
   Paper,
   Typography,
+  Autocomplete,
+  ListItemText,
+  CircularProgress,
 } from "@mui/material";
 import TextField from "@mui/material/TextField";
 import { useSnackbar } from "notistack";
@@ -23,6 +26,8 @@ import { RouteEnum } from "common/Constants";
 import useAuthUser from "hooks/useAuthUser";
 import BciSubmissionModal from "./BciSubmissionModal";
 import TextFieldLabelXHelpTooltip from "common/TextFieldLabelXHelpTooltip";
+import useDebouncedState from "hooks/useDebouncedState";
+import EmployeeSearch from "./EmployeeSearch";
 
 function Incident(props) {
   const { enqueueSnackbar } = useSnackbar();
@@ -63,6 +68,18 @@ function Incident(props) {
       generatePath(RouteEnum.INCIDENT_FIVEWHYS, { id: modalNavigationId })
     );
   };
+  const [q, setQ] = useState("");
+  const [debounceQ] = useDebouncedState(q, {
+    wait: 1000,
+    enableReInitialize: true,
+  });
+
+  const searchEmployersQueryResult = bciApi.useGetEmployeeByADSearchQuery(
+    {
+      ...(debounceQ ? { UserName: debounceQ } : {}),
+    },
+    { skip: !debounceQ }
+  );
 
   const formik = useFormik({
     initialValues: {
@@ -122,6 +139,7 @@ function Incident(props) {
         let _bciId = isEdit
           ? await updateBCIMutation({ _bciRegisteredId, ..._values }).unwrap()
           : await addBCIMutation({ ..._values }).unwrap();
+        helper.resetForm();
         enqueueSnackbar(
           isEdit ? `BCI Updated Successfully` : `BCI Added Successfully`,
           { variant: "success" }
@@ -294,16 +312,7 @@ function Incident(props) {
         Header: "Action Party",
         accessor: "actionParty",
         Cell: ({ row }) => (
-          <TextField
-            fullWidth
-            variant="outlined"
-            label="Action Party"
-            className="mt-2"
-            {...getTextFieldFormikProps(
-              dataRef.current.formik,
-              `bciActions[${row.index}].actionParty`
-            )}
-          />
+          <EmployeeSearch formik={formik} dataRef={dataRef} row={row} />
         ),
       },
       {
@@ -373,16 +382,18 @@ function Incident(props) {
 
   const defaultDetectedBy = [
     {
-      id: 1,
-      name: "Ayodeji Olotu",
+      username: "Philip.Williams",
+      refInd: null,
+      emailAddress: "Philip.Williams@nlng.com",
+      fullName: "Philip",
+      refIndicator: "HSE/4X",
     },
     {
-      id: 2,
-      name: "Agugua Chika",
-    },
-    {
-      id: 3,
-      name: "Ibukun Onasanya",
+      username: "Sophia.Wouter",
+      refInd: null,
+      emailAddress: "Sophia.Wouter@NLNG.COM",
+      fullName: "Sophia",
+      refIndicator: "HRE/21",
     },
   ];
 
@@ -502,7 +513,7 @@ function Incident(props) {
                   !!formik.touched.breachDetail && formik.touched.breachDetail
                 }
               /> */}
-              <TextField
+              {/* <TextField
                 select
                 variant="outlined"
                 label="Detected by"
@@ -510,12 +521,58 @@ function Incident(props) {
                 {...formik.getFieldProps("detector")}
               >
                 {defaultDetectedBy &&
-                  defaultDetectedBy?.map((options) => (
-                    <MenuItem key={options?.id} value={options?.name}>
-                      {options?.name}
+                  defaultDetectedBy?.map((options, index) => (
+                    <MenuItem key={index} value={options?.username}>
+                      {options?.username}
                     </MenuItem>
                   ))}
-              </TextField>
+              </TextField> */}
+              <Autocomplete
+                variant="outlined"
+                fullWidth
+                loading={searchEmployersQueryResult.isFetching}
+                freeSolo
+                options={searchEmployersQueryResult?.data || []}
+                filterOptions={(options) => options}
+                getOptionLabel={(option) =>
+                  option?.username ? option?.username : option
+                }
+                renderOption={(props, option, { selected }) => (
+                  <li {...props} key={option?.username}>
+                    <ListItemText
+                      primary={`${option?.username} (${option?.refIndicator})`}
+                    />
+                  </li>
+                )}
+                isOptionEqualToValue={(option, value) => {
+                  return option?.username === value?.username;
+                }}
+                inputValue={q}
+                onInputChange={(_, value) => setQ(value)}
+                value={formik.values.detector}
+                onChange={(_, value) => {
+                  formik.setFieldValue("detector", value?.username);
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    // margin="normal"
+                    label="Detected by"
+                    {...params}
+                    InputProps={{
+                      ...params.InputProps,
+                      endAdornment: (
+                        <>
+                          {searchEmployersQueryResult.isFetching ? (
+                            <CircularProgress color="inherit" size={20} />
+                          ) : null}
+                          {params.InputProps.endAdornment}
+                        </>
+                      ),
+                    }}
+                    {...getTextFieldFormikProps(formik, "detector")}
+                  />
+                )}
+              />
               <TextField
                 variant="outlined"
                 label={
@@ -622,7 +679,11 @@ function Incident(props) {
             </Typography>
             <div>
               <Typography className="h-10">
-                Rank the incident below in line with <a href="#"><strong>NLNG RAM</strong></a>. Use the <strong>Add button</strong> to add more ranking.
+                Rank the incident below in line with{" "}
+                <a href="#">
+                  <strong>NLNG RAM</strong>
+                </a>
+                . Use the <strong>Add button</strong> to add more ranking.
               </Typography>
               <Button
                 className="mb-4"

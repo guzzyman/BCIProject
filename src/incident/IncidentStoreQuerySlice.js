@@ -48,14 +48,34 @@ export const bciApi = baseApi.injectEndpoints({
       query: (id) => ({
         url: `/BciRegister/${id}`,
       }),
-      providesTags: () => [
-        { type: StoreQueryTagEnum.INCIDENT_DETAILS },
-      ],
+      providesTags: () => [{ type: StoreQueryTagEnum.INCIDENT_DETAILS }],
+    }),
+    getRCATeamMembersByBciId: builder.query({
+      query: (id) => ({
+        url: `/Rca/RCATeamMembersByBciId/${id}`,
+      }),
+      providesTags: () => [{ type: StoreQueryTagEnum.INCIDENT_DETAILS }],
     }),
     getLoggedInUser: builder.query({
       query: () => ({
         url: "/UserManagement/GetLoggedInUser",
       }),
+    }),
+    addReviewMember: builder.mutation({
+      query: (data) => ({
+        url: `/Rca/AddReviewTeamMembers`,
+        data,
+        method: "post",
+      }),
+      invalidatesTags: () => [{ type: StoreQueryTagEnum.ADD_REVIEW_MEMBER }],
+    }),
+    updateReviewTeamResponsiblePerson: builder.mutation({
+      query: (data) => ({
+        url: `/Rca/UpdateReviewTeamResponsiblePerson?id=${data.id}&BCIRegisterId=${data.BCIRegisterId}`,
+        data,
+        method: "post",
+      }),
+      invalidatesTags: () => [{ type: StoreQueryTagEnum.ADD_REVIEW_MEMBER }],
     }),
     addBciByWorkflowExpress: builder.mutation({
       query: (data) => ({
@@ -70,6 +90,12 @@ export const bciApi = baseApi.injectEndpoints({
     getBciWorkflowByStepId: builder.query({
       query: (id) => ({
         url: `/BciRegister/BciWorkflowByStepId/${id}`,
+      }),
+    }),
+    getEmployeeByADSearch: builder.query({
+      query: ({ ...params }) => ({
+        url: `/UserManagement/SearchUsersFromAD`,
+        params,
       }),
     }),
   }),

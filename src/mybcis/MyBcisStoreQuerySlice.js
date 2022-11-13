@@ -1,5 +1,5 @@
-import { RtkqTagEnum } from "common/Constants";
-import { baseApi, providesTags } from "common/StoreQuerySlice";
+import { RtkqTagEnum, StoreQueryTagEnum } from "common/Constants";
+import { baseApi, providesTags, invalidatesTags } from "common/StoreQuerySlice";
 
 export const bciApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -7,16 +7,16 @@ export const bciApi = baseApi.injectEndpoints({
       query: () => ({
         url: "/BciRegister",
       }),
-    }), 
+    }),
     getRCAs: builder.query({
       query: () => ({
         url: "/Rca",
       }),
-    }),   
+    }),
     getBciByUserId: builder.query({
       query: (userId) => ({
         url: `/BciRegister/BciByUserId/${userId}`,
       }),
-    }),    
+    }),
   }),
 });

@@ -6,11 +6,13 @@ import { generatePath, useNavigate } from "react-router-dom";
 import { RouteEnum } from "common/Constants";
 import { parseDateToString } from "common/Utils";
 import { Button, Icon, IconButton, Typography } from "@mui/material";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
+import BCICommentsLog from "../admin/BCICommentsLog";
 
 function MyBciList(props) {
   const { allBciResultQuery, isLoading, isError, refetch, ButtonBase } = props;
-
+  const [openModal, setOpenModal] = useState(false);
+  const [bciId, setBciId] = useState(0);
   const navigate = useNavigate();
 
   const columns = useMemo(
@@ -75,7 +77,8 @@ function MyBciList(props) {
         My BCIs
       </Typography>
       <div className="h-10">
-        Kindly click on the details icon on the list below to either view/continue your application
+        Kindly click on the details icon on the list below to either
+        view/continue your application
       </div>
       <DynamicTable
         instance={myBCITableInstance}
@@ -86,7 +89,7 @@ function MyBciList(props) {
         rowProps={(row) => ({
           onClick: () =>
             navigate(
-              generatePath(RouteEnum.RECOVERY_DETAILS, {
+              generatePath(RouteEnum.INCIDENT_DETAILS, {
                 // id: row?.values?.ticketNumber
                 id: row?.original?.id,
               })

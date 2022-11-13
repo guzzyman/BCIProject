@@ -21,7 +21,6 @@ import useTable from "hooks/useTable";
 import innerPageBanner from "assets/innerPageBanner.jpg";
 import { RouteEnum } from "common/Constants";
 
-
 function IncidentFiveWhys(props) {
   const { enqueueSnackbar } = useSnackbar();
   const navigate = useNavigate();
@@ -56,18 +55,23 @@ function IncidentFiveWhys(props) {
         rcaDate: new Date(_value.rcaDate);
       }
       try {
-        await addRCAMutation({ ..._value }).unwrap();
+        const rcaResponse = await addRCAMutation({ ..._value }).unwrap();
         enqueueSnackbar(
           isEdit ? `RCA Updated Successfully` : `RCA Added Successfully`,
           { variant: "success" }
         );
         helper.resetForm();
-        navigate(
-          generatePath(
-            RouteEnum.INCIDENT_FIVEWHYS,
-            { id }
-          )
-        )
+        navigate(generatePath(RouteEnum.INCIDENT_FIVEWHYS, { id }));
+
+        if (!!rcaResponse) {
+          navigate(
+            generatePath(RouteEnum.INCIDENT_DETAILS_PROCESS_BCIREQUEST, {
+              NextAction: 14,
+              id: id,
+              RoleId: "RCAReviewTeamLead",
+            })
+          );
+        }
       } catch (error) {
         enqueueSnackbar(`Failed to create RCA`, { variant: "error" });
       }
@@ -270,7 +274,10 @@ function IncidentFiveWhys(props) {
                 ...dataRef.current.formik.values["rcaProposedActions"],
               ];
               newRcaActions.splice(row.index, 1);
-              dataRef.current.formik.setFieldValue("rcaProposedActions", newRcaActions);
+              dataRef.current.formik.setFieldValue(
+                "rcaProposedActions",
+                newRcaActions
+              );
             }}
           >
             <Icon>delete</Icon>

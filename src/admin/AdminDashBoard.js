@@ -10,6 +10,7 @@ import {
   IconButton,
   TextField,
   MenuList,
+  Button,
 } from "@mui/material";
 import { RouteEnum, TABLE_PAGINATION_DEFAULT } from "common/Constants";
 import PageHeader from "common/PageHeader";
@@ -32,6 +33,9 @@ import * as dfn from "date-fns";
 import useAuthUser from "hooks/useAuthUser";
 import SearchTextField from "common/SearchTextField";
 import usePaginationSearchParamsTable from "hooks/usePaginationSearchParamsTable";
+import BCICommentsLog from "admin/BCICommentsLog";
+
+import { ReactComponent as NotesIcon } from "assets/svgs/notes.svg";
 
 function AdminDashBoard(props) {
   const authUser = useAuthUser();
@@ -63,7 +67,8 @@ function AdminDashBoard(props) {
   });
 
   const navigate = useNavigate();
-
+  const [openModal, setOpenModal] = useState(false);
+  const [bciId, setBciId] = useState(0);
   const allBciResultQuery = data;
   const bciStatus = bciApi.useGetBCIStatusQuery();
   const bciStatusQueryResults = bciStatus?.data;
@@ -91,6 +96,10 @@ function AdminDashBoard(props) {
         accessor: (row) => `${row?.detector}`,
       },
       {
+        Header: "Status",
+        accessor: (row) => `${row?.status}`,
+      },
+      {
         Header: "Details",
         accessor: "details",
         Cell: (row, i) => (
@@ -107,6 +116,16 @@ function AdminDashBoard(props) {
               color="primary"
             >
               <Icon>visibility</Icon>
+            </IconButton>
+            <IconButton
+              size="x-small"
+              onClick={(e) => {
+                setBciId(row?.row?.original?.id);
+                setOpenModal(true);
+              }}
+              color="primary"
+            >
+              <Icon>books</Icon>
             </IconButton>
           </div>
         ),
@@ -150,6 +169,13 @@ function AdminDashBoard(props) {
 
   return (
     <>
+      {openModal && (
+        <BCICommentsLog
+          open={openModal}
+          onClose={() => setOpenModal(false)}
+          bciId={bciId}
+        />
+      )}
       {authUser?.roles?.includes("Administrator") ? (
         <>
           <div className="flex h-200">
@@ -172,7 +198,8 @@ function AdminDashBoard(props) {
                 Submitted BCIs
               </Typography>
               <div className="h-10">
-                Administrative Setup - kindly manage application setup by navigating the tabs
+                Administrative Setup - kindly manage application setup by
+                navigating the tabs
               </div>
               <Divider className="mb-1" style={{ marginTop: 1 }} />
               <div className="flex flex-row">
@@ -193,7 +220,7 @@ function AdminDashBoard(props) {
                     <MenuList
                       className="p-3"
                       key={option?.key}
-                      value={option?.key}
+                      value={option?.name}
                     >
                       {option?.name}
                     </MenuList>
@@ -215,15 +242,14 @@ function AdminDashBoard(props) {
                   error={isError}
                   onReload={refetch}
                   RowComponent={ButtonBase}
-                  rowProps={(row) => ({
-                    onClick: () =>
-                      navigate(
-                        generatePath(RouteEnum.RECOVERY_DETAILS, {
-                          // id: row?.values?.ticketNumber
-                          id: row?.original?.id,
-                        })
-                      ),
-                  })}
+                  // rowProps={(row) => ({
+                  //   onClick: () =>
+                  //     navigate(
+                  //       generatePath(RouteEnum.INCIDENT_DETAILS, {
+                  //         id: row?.original?.id,
+                  //       })
+                  //     ),
+                  // })}
                 />
               </>
             </Paper>

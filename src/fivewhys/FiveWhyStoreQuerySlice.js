@@ -15,20 +15,11 @@ export const bciApi = baseApi.injectEndpoints({
         method: "post",
       })
     }),    
-    // getIncidentCategory: builder.query({
-    //   query: () => ({
-    //     url: "/IncidentCategory",
-    //   }),
-    // }),
-    // getCategoryRanking: builder.query({
-    //   query: () => ({
-    //     url: "/CategoryRanking",
-    //   }),
-    // }),   
-    // getImpact: builder.query({
-    //   query: () => ({
-    //     url: "/Impact",
-    //   }),
-    // }),      
+    getEmployeeByADSearch: builder.query({
+      query: ({ ...params }) => ({
+        url: `/UserManagement/SearchUsersFromAD`,
+        params,
+      }),
+    }),      
   }),
 });

@@ -1,4 +1,4 @@
-import { RtkqTagEnum } from "common/Constants";
+import { RtkqTagEnum, StoreQueryTagEnum } from "common/Constants";
 import { baseApi, providesTags } from "common/StoreQuerySlice";
 
 export const bciApi = baseApi.injectEndpoints({
@@ -169,6 +169,12 @@ export const bciApi = baseApi.injectEndpoints({
         params,
       }),
       providesTags: (data) => providesTags(data, RtkqTagEnum.getBcis),
+    }),
+    getBciCommentsByBCIId: builder.query({
+      query: (id) => ({
+        url: `/BciRegister/GetCommentsByBCIId/${id}`,
+      }),
+      invalidatesTags: () => [{ type: StoreQueryTagEnum.BCI_COMMENT_DETAILS }],
     }),
   }),
 });
