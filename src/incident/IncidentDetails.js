@@ -30,6 +30,7 @@ import ReviewTeamMember from "./ReviewTeamMember";
 import StopWorkFlow from "./StopWorkFlow";
 import RefillRCAForm from "./RefillRCAForm";
 import ResponsibleTeamMember from "./ResponsibleTeamMember";
+import ApprovalRejectionComment from "./ApprovalRejectionComment";
 import useDataRef from "hooks/useDataRef";
 
 function IncidentDetails(props) {
@@ -675,35 +676,34 @@ function IncidentDetails(props) {
                                   instance={reviewTeamMembersTableInstance}
                                 />
                               </div>
+                            ) : _NextAction === "9" ? (
+                              <div className="flex items-right justify-end gap-4 mt-3">
+                                <ResponsibleTeamMember
+                                  workFlowExpressMutation={
+                                    workFlowExpressMutation
+                                  }
+                                  BCIId={_BCIId}
+                                  Approver={userName}
+                                  CurrentStep={_NextAction}
+                                  ApproverStatus={"ACCEPTED"}
+                                  ApprovalComment={`${userName} has been chosen as responsible party to document the RCA`}
+                                />
+                              </div>
                             ) : (
-                              ""
+                              <ApprovalRejectionComment
+                                formik={formik}
+                                TextField={TextField}
+                              />
                             )}
                             {_NextAction === "STOP" ? (
                               <StopWorkFlow Typography={Typography} />
                             ) : _NextAction === "11" || _NextAction === "21" ? (
-                              <RefillRCAForm Typography={Typography} />
-                            ) : _NextAction === "21" ? (
                               <RefillRCAForm
                                 Typography={Typography}
                                 _NextAction={_NextAction}
                               />
                             ) : (
-                              <TextField
-                                variant="outlined"
-                                label="Approval/Rejection Comments"
-                                multiline={true}
-                                rows={3}
-                                fullWidth
-                                {...formik.getFieldProps("ApprovalComment")}
-                                error={
-                                  !!formik.touched.ApprovalComment &&
-                                  formik.touched.ApprovalComment
-                                }
-                                helperText={
-                                  !!formik.touched.ApprovalComment &&
-                                  formik.touched.ApprovalComment
-                                }
-                              />
+                              <></>
                             )}
                           </Grid>
                         </>
@@ -720,16 +720,7 @@ function IncidentDetails(props) {
                         </LoadingButton>
                       </div>
                     ) : _NextAction === "9" ? (
-                      <div className="flex items-right justify-end gap-4 mt-3">
-                        <ResponsibleTeamMember
-                          workFlowExpressMutation={workFlowExpressMutation}
-                          BCIId={_BCIId}
-                          Approver={userName}
-                          CurrentStep={_NextAction}
-                          ApproverStatus={"ACCEPTED"}
-                          ApprovalComment={`${userName} has been chosen as responsible party to document the RCA`}
-                        />
-                      </div>
+                      <></>
                     ) : (
                       <div className="flex items-center justify-end gap-4 mt-3">
                         {stopProcessFlow ? (
