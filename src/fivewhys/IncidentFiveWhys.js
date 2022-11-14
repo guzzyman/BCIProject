@@ -21,6 +21,7 @@ import useTable from "hooks/useTable";
 import innerPageBanner from "assets/innerPageBanner.jpg";
 import { RouteEnum } from "common/Constants";
 import AppEmployeeSearch from "./AppEmployeeSearch";
+import ActionPartySearch from "./ActionPartySearch";
 
 function IncidentFiveWhys(props) {
   const { enqueueSnackbar } = useSnackbar();
@@ -209,7 +210,7 @@ function IncidentFiveWhys(props) {
             fullWidth
             variant="outlined"
             label="Action"
-            className="mt-4 mb-4"
+            className="mt-6 mb-4"
             {...getTextFieldFormikProps(
               dataRef.current.formik,
               `rcaProposedActions[${row.index}].action`
@@ -221,16 +222,17 @@ function IncidentFiveWhys(props) {
         Header: "Action Party",
         accessor: "actionParty",
         Cell: ({ row }) => (
-          <TextField
-            fullWidth
-            variant="outlined"
-            label="Action Party"
-            className="mt-2"
-            {...getTextFieldFormikProps(
-              dataRef.current.formik,
-              `rcaProposedActions[${row.index}].actionParty`
-            )}
-          />
+          <ActionPartySearch formik={formik} dataRef={dataRef} row={row} />
+          // <TextField
+          //   fullWidth
+          //   variant="outlined"
+          //   label="Action Party"
+          //   className="mt-2"
+          //   {...getTextFieldFormikProps(
+          //     dataRef.current.formik,
+          //     `rcaProposedActions[${row.index}].actionParty`
+          //   )}
+          // />
         ),
       },
       {
