@@ -28,6 +28,7 @@ import BciSubmissionModal from "./BciSubmissionModal";
 import TextFieldLabelXHelpTooltip from "common/TextFieldLabelXHelpTooltip";
 import useDebouncedState from "hooks/useDebouncedState";
 import EmployeeSearch from "./EmployeeSearch";
+import AppEmployeeSearch from "fivewhys/AppEmployeeSearch";
 
 function Incident(props) {
   const { enqueueSnackbar } = useSnackbar();
@@ -527,7 +528,7 @@ function Incident(props) {
                     </MenuItem>
                   ))}
               </TextField> */}
-              <Autocomplete
+              {/* <Autocomplete
                 variant="outlined"
                 fullWidth
                 loading={searchEmployersQueryResult.isFetching}
@@ -572,6 +573,11 @@ function Incident(props) {
                     {...getTextFieldFormikProps(formik, "detector")}
                   />
                 )}
+              /> */}
+              <AppEmployeeSearch
+                formik={formik}
+                label={"Detected by"}
+                fieldProperty={"detector"}
               />
               <TextField
                 variant="outlined"

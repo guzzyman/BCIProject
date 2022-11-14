@@ -9,8 +9,10 @@ import useDebouncedState from "hooks/useDebouncedState";
 import { bciApi } from "./FiveWhyStoreQuerySlice";
 import React, { useState } from "react";
 
-function EmployeeSearch(prop) {
-  const { formik, dataRef, row } = prop;
+function AppEmployeeSearch(prop) {
+  const { formik, label, fieldProperty, dataRef, row } = prop;
+  const _label = label;
+  const _fieldProperty = fieldProperty;
   const [q, setQ] = useState("");
   const [debounceQ] = useDebouncedState(q, {
     wait: 1000,
@@ -46,20 +48,13 @@ function EmployeeSearch(prop) {
       }}
       inputValue={q}
       onInputChange={(_, value) => setQ(value)}
-      // value={formik.values.actionParty}
-      value={
-        dataRef.current.formik.values?.bciActions[`${row?.index}`].actionParty
-      }
+      value={formik.values.problemOwner}
       onChange={(_, value) => {
-        formik.setFieldValue(
-          `bciActions[${row?.index}].actionParty`,
-          value?.username
-        );
+        formik.setFieldValue(_fieldProperty, value?.username);
       }}
       renderInput={(params) => (
         <TextField
-          margin="normal"
-          label="Action Party"
+          label={_label}
           {...params}
           InputProps={{
             ...params.InputProps,
@@ -72,14 +67,11 @@ function EmployeeSearch(prop) {
               </>
             ),
           }}
-          {...getTextFieldFormikProps(
-            dataRef.current.formik,
-            `bciActions[${row.index}].actionParty`
-          )}
+          {...getTextFieldFormikProps(formik, _fieldProperty)}
         />
       )}
     />
   );
 }
 
-export default EmployeeSearch;
+export default AppEmployeeSearch;

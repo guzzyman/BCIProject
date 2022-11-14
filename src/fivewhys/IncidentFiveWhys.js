@@ -20,6 +20,7 @@ import { bciApi } from "./FiveWhyStoreQuerySlice";
 import useTable from "hooks/useTable";
 import innerPageBanner from "assets/innerPageBanner.jpg";
 import { RouteEnum } from "common/Constants";
+import AppEmployeeSearch from "./AppEmployeeSearch";
 
 function IncidentFiveWhys(props) {
   const { enqueueSnackbar } = useSnackbar();
@@ -401,17 +402,10 @@ function IncidentFiveWhys(props) {
                   formik.touched.problemDefinition
                 }
               />
-              <TextField
-                variant="outlined"
-                label="Problem Owner"
-                fullWidth
-                {...formik.getFieldProps("problemOwner")}
-                error={
-                  !!formik.touched.problemOwner && formik.touched.problemOwner
-                }
-                helperText={
-                  !!formik.touched.problemOwner && formik.touched.problemOwner
-                }
+              <AppEmployeeSearch
+                formik={formik}
+                label={"Problem Owner"}
+                fieldProperty={"problemOwner"}
               />
               <TextField
                 select
@@ -474,7 +468,7 @@ function IncidentFiveWhys(props) {
             </div>
           </div>
         </Paper>
-        <Paper className="p-4">
+        {/* <Paper className="p-4">
           <div>
             <Typography variant="h6" className="font-bold">
               Review Team Member
@@ -501,7 +495,7 @@ function IncidentFiveWhys(props) {
               </div>
             </div>
           </div>
-        </Paper>
+        </Paper> */}
         <Paper className="p-4">
           <div>
             <Typography variant="h6" className="font-bold">
