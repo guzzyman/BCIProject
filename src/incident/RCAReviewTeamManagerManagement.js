@@ -166,12 +166,12 @@ function RCAReviewTeamManagerManagement() {
       console.log(`submitted values >>> `, values);
       try {
         await addReviewManagersMutation({ ..._values }).unwrap();
-        enqueueSnackbar(`Review Team Members Added Successfully`, {
+        enqueueSnackbar(`Issue Owner Line Manager Added Successfully`, {
           variant: "success",
         });
         helper.resetForm();
       } catch (error) {
-        enqueueSnackbar(`Failed to Add Review Team Members`, {
+        enqueueSnackbar(`Failed to Add Issue Owner Line Manager`, {
           variant: "error",
         });
       }
