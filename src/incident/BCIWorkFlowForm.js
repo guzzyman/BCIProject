@@ -236,13 +236,17 @@ function BCIWorkFlowForm({
   const reviewTeamMemberColumns = useMemo(
     () => [
       {
-        Header: "Review Team Member(s)",
+        Header:
+          _NextAction === "19A"
+            ? "Issue Owner Line Manager"
+            : "Review Team Member(s)",
         accessor: "rcaReviewTeamMembers",
         Cell: ({ row }) => (
           <ReviewMemberSearch
             reviewMemberFormik={reviewMemberFormik}
             dataRef={dataRef}
             row={row}
+            nextAction={_NextAction}
           />
         ),
       },
@@ -469,7 +473,7 @@ function BCIWorkFlowForm({
                   loading={isLoading}
                   onClick={reviewMemberFormik.handleSubmit}
                 >
-                  Submit Review Team Manager
+                  Submit Issue Owner Line Manager(s)
                 </LoadingButton>
               </div>
             ) : _NextAction === "9" ? (

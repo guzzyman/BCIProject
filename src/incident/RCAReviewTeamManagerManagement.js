@@ -241,8 +241,8 @@ function RCAReviewTeamManagerManagement() {
         ),
       },
       {
-        Header: "Override",
-        accessor: "override",
+        Header: "Proxy Endorsement",
+        accessor: "proxyendorsement",
         Cell: ({ row }) => (
           <Button
             onClick={() => {
@@ -259,7 +259,7 @@ function RCAReviewTeamManagerManagement() {
             }}
             disabled={row?.original?.agreed && row?.original?.acknowledged}
           >
-            Override
+            Proxy Endorsement
           </Button>
         ),
       },

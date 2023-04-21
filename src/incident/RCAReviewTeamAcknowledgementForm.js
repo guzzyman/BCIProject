@@ -39,7 +39,7 @@ function RCAReviewTeamAcknowledgementForm({
       _values.Acknowledged = isAgreed === false ? "False" : "True";
       _values.Agreed = isAgreed === false ? false : true;
       if (member) {
-        _values.Comments += ` - Acknowledgement overriden by ${_loggedOnUser}`;
+        _values.Comments += ` - Acknowledgement proxy-endorsed by ${_loggedOnUser}`;
       }
       try {
         const submissionResponse = addAcknowledgementMutation({

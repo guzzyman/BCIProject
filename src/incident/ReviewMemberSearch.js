@@ -10,7 +10,7 @@ import { bciApi } from "./IncidentStoreQuerySlice";
 import React, { useState } from "react";
 
 function ReviewMemberSearch(prop) {
-  const { reviewMemberFormik, dataRef, row } = prop;
+  const { reviewMemberFormik, dataRef, row, nextAction } = prop;
   const [q, setQ] = useState("");
   const [debounceQ] = useDebouncedState(q, {
     wait: 1000,
@@ -47,8 +47,9 @@ function ReviewMemberSearch(prop) {
       inputValue={q}
       onInputChange={(_, value) => setQ(value)}
       value={
-        dataRef.current.reviewMemberFormik.values?.rcaReviewTeamMembers[`${row?.index}`]
-          .member
+        dataRef.current.reviewMemberFormik.values?.rcaReviewTeamMembers[
+          `${row?.index}`
+        ].member
       }
       onChange={(_, value) => {
         reviewMemberFormik.setFieldValue(
@@ -59,7 +60,7 @@ function ReviewMemberSearch(prop) {
       renderInput={(params) => (
         <TextField
           margin="normal"
-          label="Review Team Member"
+          label={nextAction === "19A" ? "Issue Owner Line Manager" : "Review Team Member"}
           {...params}
           InputProps={{
             ...params.InputProps,

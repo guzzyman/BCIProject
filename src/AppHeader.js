@@ -30,6 +30,8 @@ function AppHeader(props) {
   const avatarCharacter = authUser?.fullName?.slice(0, 1);
   const isAdmin = authUser?.roles?.includes("SuperAdmin");
 
+  console.log(authUser);
+
   const LINKS = isAdmin
     ? [
         { icon: "home", name: "Home", to: "/" },
@@ -49,18 +51,17 @@ function AppHeader(props) {
           icon: "people",
           name: "Review Manager Management",
           to: `/incident/reviewmanagermanagement/${authUser?.username}`,
-        }
+        },
       ]
     : [
         { icon: "home", name: "Home", to: "/" },
         { icon: "app_registration", name: "Register BCI", to: "/incident" },
         { icon: "cases", name: "My BCIs", to: `/mybcis/${authUser?.username}` },
-        // {
-        //   icon: "business_center",
-        //   name: "Workflow",
-        //   to: "/workflow",
-        // },
       ];
+
+  const linkString = JSON.stringify(authUser?.roles);
+
+  console.log(linkString);
 
   return (
     <AppBar position="sticky">
@@ -71,7 +72,7 @@ function AppHeader(props) {
           </Typography>
           <div className="flex-1" />
           <Typography>
-            Welcome {authUser?.fullName}!. 
+            Welcome {authUser?.fullName}!.
             {format(new Date(), "do MMM, Y")}
           </Typography>
           <Icon>notifications</Icon>

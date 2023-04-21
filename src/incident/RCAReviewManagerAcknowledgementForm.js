@@ -40,7 +40,7 @@ function RCAReviewManagerAcknowledgementForm({
       _values.Agreed = isAgreed === false ? false : true;
 
       if (manager) {
-        _values.Comments += ` - Acknowledgement overriden by ${_loggedOnUser}`;
+        _values.Comments += ` - Acknowledgement proxy-endorsed by ${_loggedOnUser}`;
       }
       try {
         const submissionResponse = addAcknowledgementMutation({
