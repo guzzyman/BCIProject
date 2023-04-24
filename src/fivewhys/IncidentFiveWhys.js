@@ -746,10 +746,11 @@ function IncidentFiveWhys(props) {
             <Paper className="p-4">
               <div>
                 <Typography variant="h6" className="font-bold">
-                  Actions Taken
+                  Preliminary Actions Taken
                 </Typography>
                 <Typography className="h-10">
-                  Kindly add actions taken below using the above button
+                  Kindly add preliminary actions taken below using the above
+                  button
                 </Typography>
                 <Button
                   className="mb-4"
@@ -777,8 +778,9 @@ function IncidentFiveWhys(props) {
                   Action/Action Parties
                 </Typography>
                 <div className="h-10">
-                  Kindly provide action/action party below. You may add more
-                  action/action party by using the <strong>Add Button</strong>
+                  Kindly provide proposed actions to address gaps below. You may
+                  add more proposed actions to address gaps by using the{" "}
+                  <strong>Add Button</strong>
                 </div>
                 <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-4">
                   <div className="col-span-3">

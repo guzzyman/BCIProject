@@ -187,12 +187,13 @@ function RCAReviewTeamManagement() {
 
   const searchedBciId = dataRef.current.formik.values.bciRegisterId;
 
-  const teamMemberByBCIIdQueryResult = bciApi.useGetRCATeamMembersByBciIdQuery(
-    searchedBciId,
-    {
-      skip: !searchedBciId,
-    }
-  );
+  const teamMemberByBCIIdQueryResult =
+    bciApi.useGetRCATeamMembersByBciIdAndLoggedOnUserQuery(
+      { id: searchedBciId, LoggedInUser: loggedOnUser },
+      {
+        skip: !searchedBciId,
+      }
+    );
 
   const tableData = useMemo(
     () => teamMemberByBCIIdQueryResult?.data,

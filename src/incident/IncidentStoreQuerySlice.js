@@ -56,6 +56,14 @@ export const bciApi = baseApi.injectEndpoints({
       }),
       providesTags: (id) => [{ type: StoreQueryTagEnum.ADD_REVIEW_MEMBER }],
     }),
+
+    getRCATeamMembersByBciIdAndLoggedOnUser: builder.query({
+      query: ({id, LoggedInUser}) => ({
+        url: `/Rca/RCATeamMembersByBciId?bciID=${id}&LoggedInUser=${LoggedInUser}&Option=Member`,
+      }),
+      providesTags: (id) => [{ type: StoreQueryTagEnum.ADD_REVIEW_MEMBER }],
+    }),
+
     resendRCAFormToTeamMember: builder.mutation({
       query: ({ ...data }) => ({
         url: `/Rca/ResendRCAFormToTeamMember?BCIid=${data?.id}&Member=${data?.member}`,

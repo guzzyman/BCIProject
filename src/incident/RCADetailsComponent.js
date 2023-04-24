@@ -3,6 +3,7 @@ import useTable from "hooks/useTable";
 import { ButtonBase, Grid, Paper, Typography } from "@mui/material";
 import DynamicTable from "common/DynamicTable";
 import { bciApi } from "./IncidentStoreQuerySlice";
+import * as dfn from "date-fns";
 
 function RCADetailsComponent({ id }) {
   const { data, isLoading, isError, refetch } = bciApi.useGetBciByIdQuery(id, {
@@ -100,7 +101,7 @@ function RCADetailsComponent({ id }) {
 
         <div className="col-span-3 mt-4">
           <Typography variant="h6" className="font-bold mb-4">
-            Action/Action Party
+            Proposed Actions to Address Gaps
           </Typography>
           <DynamicTable
             instance={rcaProposedActionsInstance}
@@ -215,14 +216,19 @@ const rcaIssueOwnerLineManagersColumns = [
     accessor: "agreed",
     Cell: ({ row }) =>
       row?.original?.agreed?.toUpperCase() == "FALSE"
-        ? "False"
+        ? "Rejected"
         : row?.original?.agreed?.toUpperCase() == "TRUE"
-        ? "True"
+        ? "Approved"
         : "",
   },
   {
     Header: "Comment",
     accessor: "comments",
+  },
+  {
+    Header: "Date",
+    accessor: (row) =>
+      `${dfn.format(new Date(row?.commentDate), "dd MMM yyyy")}`,
   },
 ];
 
