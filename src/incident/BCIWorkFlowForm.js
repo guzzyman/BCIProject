@@ -71,6 +71,8 @@ function BCIWorkFlowForm({
     skip: !id,
   });
 
+  const rcaData = bciData?.data?.rca;
+
   async function handleReject(values) {
     // console.log("Missing NextAction Param", _NextAction);
     values.ApproverStatus = "REJECTED";
@@ -372,6 +374,7 @@ function BCIWorkFlowForm({
                         <Button
                           className="mb-4"
                           startIcon={<Icon>add</Icon>}
+                          disabled={!!rcaData}
                           onClick={() =>
                             reviewMemberFormik.setFieldValue(
                               "rcaReviewTeamMembers",
